@@ -1,0 +1,44 @@
+specVersion: 0.0.1
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: ProxyContract
+    network: mainnet
+    source:
+      address: "0xd54f502e184b6b739d7d27a6410a67dc462d69c8"
+      abi: ProxyContract
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.2
+      language: wasm/assemblyscript
+      entities:
+        - FinalizedImplementation
+        - ImplementationAdded
+        - ImplementationRemoved
+        - LogNewGovernorAccepted
+        - LogNominatedGovernor
+        - LogNominationCancelled
+        - LogRemovedGovernor
+        - Upgraded
+      abis:
+        - name: ProxyContract
+          file: ./abis/ProxyContract.json
+      eventHandlers:
+        - event: FinalizedImplementation(indexed address)
+          handler: handleFinalizedImplementation
+        - event: ImplementationAdded(indexed address,bytes,bool)
+          handler: handleImplementationAdded
+        - event: ImplementationRemoved(indexed address)
+          handler: handleImplementationRemoved
+        - event: LogNewGovernorAccepted(address)
+          handler: handleLogNewGovernorAccepted
+        - event: LogNominatedGovernor(address)
+          handler: handleLogNominatedGovernor
+        - event: LogNominationCancelled()
+          handler: handleLogNominationCancelled
+        - event: LogRemovedGovernor(address)
+          handler: handleLogRemovedGovernor
+        - event: Upgraded(indexed address)
+          handler: handleUpgraded
+      file: ./src/mapping.ts
