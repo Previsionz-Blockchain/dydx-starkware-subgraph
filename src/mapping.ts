@@ -10,13 +10,9 @@ export function handleLogStateTransitionFact(
 
   log.info("stateTransitionFact: {}", [stateTransitionFact]);
 
-  let entity = StateTransitionFact.load(stateTransitionFact);
-
-  if (entity == null) {
-    entity = new StateTransitionFact(stateTransitionFact);
-    entity.blockNumber = event.block.number;
-    entity.save();
-  }
+  let entity = new StateTransitionFact(stateTransitionFact);
+  entity.blockNumber = event.block.number;
+  entity.save();
 }
 
 export function handleLogMemoryPageFactContinuous(
@@ -31,16 +27,12 @@ export function handleLogMemoryPageFactContinuous(
     memoryHash.toString(),
   ]);
 
-  let entity = MemoryPageFact.load(id);
-
-  if (entity == null) {
-    entity = new MemoryPageFact(id);
-    entity.factHash = factHash;
-    entity.memoryHash = memoryHash;
-    entity.prod = event.params.prod;
-    entity.blockNumber = event.block.number;
-    entity.save();
-  }
+  let entity = new MemoryPageFact(id);
+  entity.factHash = factHash;
+  entity.memoryHash = memoryHash;
+  entity.prod = event.params.prod;
+  entity.blockNumber = event.block.number;
+  entity.save();
 }
 
 // export function handleFinalizedImplementation(
