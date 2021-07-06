@@ -22,3 +22,23 @@ dataSources:
         - event: LogStateTransitionFact(bytes32)
           handler: handleLogStateTransitionFact
       file: ./src/mapping.ts
+  - kind: ethereum/contract
+    name: MemoryPageFactRegistry
+    network: mainnet
+    source:
+      address: "0xEfbCcE4659db72eC6897F46783303708cf9ACef8"
+      abi: MemoryPageFactRegistry
+      startBlock: 11813182
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - MemoryPageFact
+      abis:
+        - name: MemoryPageFactRegistry
+          file: ./abis/MemoryPageFactRegistry.json
+      eventHandlers:
+        - event: LogMemoryPageFactContinuous(bytes32,uint256,uint256)
+          handler: handleLogMemoryPageFactContinuous
+      file: ./src/mapping.ts

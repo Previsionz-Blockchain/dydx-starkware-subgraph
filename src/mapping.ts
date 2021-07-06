@@ -1,18 +1,44 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
 import { LogStateTransitionFact } from "../generated/StarkPerpetual/StarkPerpetual";
-import { StateTransitionFact } from "../generated/schema";
+import { LogMemoryPageFactContinuous } from "../generated/MemoryPageFactRegistry/MemoryPageFactRegistry";
+import { StateTransitionFact, MemoryPageFact } from "../generated/schema";
 
 export function handleLogStateTransitionFact(
   event: LogStateTransitionFact
 ): void {
   let stateTransitionFact = event.params.stateTransitionFact.toHexString();
 
-  log.info("stateTransitionFact {}", [stateTransitionFact]);
+  log.info("stateTransitionFact: {}", [stateTransitionFact]);
 
   let entity = StateTransitionFact.load(stateTransitionFact);
 
   if (entity == null) {
     entity = new StateTransitionFact(stateTransitionFact);
+    entity.blockNumber = event.block.number;
+    entity.save();
+  }
+}
+
+export function handleLogMemoryPageFactContinuous(
+  event: LogMemoryPageFactContinuous
+): void {
+  let factHash = event.params.factHash;
+  let memoryHash = event.params.memoryHash;
+  let id = factHash.toHexString() + memoryHash.toHexString();
+
+  log.info("factHash: {}, memoryHash: {}", [
+    factHash.toHexString(),
+    memoryHash.toString(),
+  ]);
+
+  let entity = MemoryPageFact.load(id);
+
+  if (entity == null) {
+    entity = new MemoryPageFact(id);
+    entity.factHash = factHash;
+    entity.memoryHash = memoryHash;
+    entity.prod = event.params.prod;
+    entity.blockNumber = event.block.number;
     entity.save();
   }
 }

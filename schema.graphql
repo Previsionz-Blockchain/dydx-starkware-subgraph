@@ -1,3 +1,12 @@
 type StateTransitionFact @entity {
   id: ID!
+  blockNumber: BigInt!
+}
+
+type MemoryPageFact @entity {
+  id: ID!
+  blockNumber: BigInt!
+  factHash: Bytes!
+  memoryHash: BigInt!
+  prod: BigInt!
 }
