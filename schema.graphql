@@ -1,11 +1,13 @@
 type StateTransitionFact @entity {
   id: ID!
   blockNumber: BigInt!
+  memoryPageFacts: [MemoryPageFact!]! @derivedFrom(field: "stateTransitionFact")
 }
 
 type MemoryPageFact @entity {
   id: ID!
   blockNumber: BigInt!
+  stateTransitionFact: StateTransitionFact
   factHash: Bytes!
   memoryHash: BigInt!
   prod: BigInt!
