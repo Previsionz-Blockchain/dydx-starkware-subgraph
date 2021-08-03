@@ -125,7 +125,7 @@ export function handleUpgraded(event: Upgraded): void {
   entity.transactionHash = event.transaction.hash;
 
   entity.implementation = event.params.implementation;
-  entity.type = "ADDED";
+  entity.type = "UPGRADED";
   entity.save();
 
   GpsStatementVerifier.create(event.params.implementation);
