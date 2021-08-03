@@ -3,6 +3,9 @@ import { LogStateTransitionFact } from "../generated/StarkPerpetual/StarkPerpetu
 import { LogMemoryPageFactContinuous } from "../generated/MemoryPageFactRegistry/MemoryPageFactRegistry";
 import { StateTransitionFact, MemoryPageFact } from "../generated/schema";
 
+/**
+ * In python: main_contract_events
+ */
 export function handleLogStateTransitionFact(
   event: LogStateTransitionFact
 ): void {
@@ -11,16 +14,22 @@ export function handleLogStateTransitionFact(
   log.info("stateTransitionFact: {}", [stateTransitionFact]);
 
   let entity = new StateTransitionFact(stateTransitionFact);
+  entity.timestamp = event.block.timestamp;
   entity.blockNumber = event.block.number;
+  entity.blockHash = event.block.hash;
+  entity.transactionHash = event.transaction.hash;
   entity.save();
 }
 
+/**
+ * In python: memory_page_map
+ */
 export function handleLogMemoryPageFactContinuous(
   event: LogMemoryPageFactContinuous
 ): void {
   let factHash = event.params.factHash;
   let memoryHash = event.params.memoryHash;
-  let id = factHash.toHexString() + memoryHash.toHexString();
+  let id = factHash.toHexString() + ":" + memoryHash.toHexString();
 
   log.info("factHash: {}, memoryHash: {}", [
     factHash.toHexString(),
@@ -28,11 +37,15 @@ export function handleLogMemoryPageFactContinuous(
   ]);
 
   let entity = new MemoryPageFact(id);
+  entity.timestamp = event.block.timestamp;
+  entity.blockNumber = event.block.number;
+  entity.blockHash = event.block.hash;
+  entity.transactionHash = event.transaction.hash;
+
   entity.factHash = factHash;
   entity.memoryHash = memoryHash;
   entity.prod = event.params.prod;
-  entity.blockNumber = event.block.number;
-  entity.stateTransitionFact = factHash.toHexString();
+  entity.stateTransitionFact = factHash;
   entity.save();
 }
 

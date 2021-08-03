@@ -1,13 +1,28 @@
-type StateTransitionFact @entity {
+interface Fact {
   id: ID!
   blockNumber: BigInt!
-  memoryPageFacts: [MemoryPageFact!]! @derivedFrom(field: "stateTransitionFact")
+  blockHash: Bytes!
+  transactionHash: Bytes!
+  timestamp: BigInt!
 }
 
-type MemoryPageFact @entity {
+type StateTransitionFact implements Fact @entity {
   id: ID!
   blockNumber: BigInt!
-  stateTransitionFact: StateTransitionFact
+  blockHash: Bytes!
+  transactionHash: Bytes!
+  timestamp: BigInt!
+  # memoryPageFacts: [MemoryPageFact!]! @derivedFrom(field: "stateTransitionFact")
+}
+
+type MemoryPageFact implements Fact @entity {
+  id: ID!
+  blockNumber: BigInt!
+  blockHash: Bytes!
+  transactionHash: Bytes!
+  timestamp: BigInt!
+
+  stateTransitionFact: Bytes!
   factHash: Bytes!
   memoryHash: BigInt!
   prod: BigInt!
