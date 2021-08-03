@@ -1,4 +1,4 @@
-import { BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 
 import { LogStateTransitionFact } from "../generated/StarkPerpetual/StarkPerpetual";
 import { LogMemoryPageFactContinuous } from "../generated/MemoryPageFactRegistry/MemoryPageFactRegistry";
@@ -109,7 +109,7 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
   entity.type = "ADDED";
   entity.save();
 
-  GpsStatementVerifier.create(event.params.initializer);
+  GpsStatementVerifier.create(event.params.initializer as Address);
 }
 
 export function handleUpgraded(event: Upgraded): void {
