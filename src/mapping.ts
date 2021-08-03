@@ -1,17 +1,20 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
+
 import { LogStateTransitionFact } from "../generated/StarkPerpetual/StarkPerpetual";
 import { LogMemoryPageFactContinuous } from "../generated/MemoryPageFactRegistry/MemoryPageFactRegistry";
-import { LogMemoryPagesHashes } from "../generated/GpsStatementVerifier/GpsStatementVerifier";
 import {
   ImplementationAdded,
   Upgraded,
 } from "../generated/CallProxy/CallProxy";
+import { LogMemoryPagesHashes } from "../generated/templates/GpsStatementVerifier/GpsStatementVerifier";
+
 import {
   StateTransitionFact,
   MemoryPageFact,
   MemoryPageHash,
   ProxyEvent,
 } from "../generated/schema";
+import { GpsStatementVerifier } from "../generated/templates";
 
 /**
  * In python: main_contract_events
@@ -122,6 +125,8 @@ export function handleUpgraded(event: Upgraded): void {
   entity.transactionHash = event.transaction.hash;
 
   entity.implementation = event.params.implementation;
-  entity.type = "UPGRADED";
+  entity.type = "ADDED";
   entity.save();
+
+  GpsStatementVerifier.create(event.params.implementation);
 }
