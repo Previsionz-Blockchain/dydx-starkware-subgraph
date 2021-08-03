@@ -59,7 +59,7 @@ dataSources:
         - name: CallProxy
           file: ./abis/CallProxy.json
       eventHandlers:
-        - event: ImplementationAdded(indexed address,bytes,bool)
+        - event: ImplementationAdded(indexed address,address,bool)
           handler: handleImplementationAdded
         - event: Upgraded(indexed address)
           handler: handleUpgraded

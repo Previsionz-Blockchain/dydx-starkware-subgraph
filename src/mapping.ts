@@ -108,6 +108,8 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
   entity.finalize = event.params.finalize;
   entity.type = "ADDED";
   entity.save();
+
+  GpsStatementVerifier.create(event.params.initializer);
 }
 
 export function handleUpgraded(event: Upgraded): void {
@@ -127,6 +129,4 @@ export function handleUpgraded(event: Upgraded): void {
   entity.implementation = event.params.implementation;
   entity.type = "UPGRADED";
   entity.save();
-
-  GpsStatementVerifier.create(event.params.implementation);
 }

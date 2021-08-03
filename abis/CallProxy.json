@@ -27,7 +27,7 @@
         "indexed": false,
         "internalType": "bytes",
         "name": "initializer",
-        "type": "bytes"
+        "type": "address"
       },
       {
         "indexed": false,
