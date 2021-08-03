@@ -3,9 +3,14 @@ import { LogStateTransitionFact } from "../generated/StarkPerpetual/StarkPerpetu
 import { LogMemoryPageFactContinuous } from "../generated/MemoryPageFactRegistry/MemoryPageFactRegistry";
 import { LogMemoryPagesHashes } from "../generated/GpsStatementVerifier/GpsStatementVerifier";
 import {
+  ImplementationAdded,
+  Upgraded,
+} from "../generated/CallProxy/CallProxy";
+import {
   StateTransitionFact,
   MemoryPageFact,
   MemoryPageHash,
+  ProxyEvent,
 } from "../generated/schema";
 
 /**
@@ -63,9 +68,7 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
   let factHash = event.params.factHash;
   let pagesHashes = event.params.pagesHashes;
   let id =
-    event.transaction.hash.toHexString() +
-    ":" +
-    event.transaction.index.toHexString();
+    event.transaction.hash.toHexString() + ":" + event.logIndex.toHexString();
 
   log.info("handleLogMemoryPagesHashes - factHash: {}, pagesHashes: {}", [
     factHash.toHexString(),
@@ -83,71 +86,40 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
   entity.save();
 }
 
-// export function handleFinalizedImplementation(
-//   event: FinalizedImplementation
-// ): void {
-//   // Entities can be loaded from the store using a string ID; this ID
-//   // needs to be unique across all entities of the same type
-//   let entity = ExampleEntity.load(event.transaction.from.toHex());
+export function handleImplementationAdded(event: ImplementationAdded): void {
+  let id =
+    event.transaction.hash.toHexString() + ":" + event.logIndex.toHexString();
 
-//   // Entities only exist after they have been saved to the store;
-//   // `null` checks allow to create entities on demand
-//   if (entity == null) {
-//     entity = new ExampleEntity(event.transaction.from.toHex());
+  log.info("handleImplementationAdded - implementation: {}", [
+    event.params.implementation.toString(),
+  ]);
 
-//     // Entity fields can be set using simple assignments
-//     entity.count = BigInt.fromI32(0);
-//   }
+  let entity = new ProxyEvent(id);
+  entity.timestamp = event.block.timestamp;
+  entity.blockNumber = event.block.number;
+  entity.blockHash = event.block.hash;
+  entity.transactionHash = event.transaction.hash;
 
-//   // BigInt and BigDecimal math are supported
-//   entity.count = entity.count + BigInt.fromI32(1);
+  entity.implementation = event.params.implementation;
+  entity.initializer = event.params.initializer;
+  entity.finalize = event.params.finalize;
+  entity.save();
+}
 
-//   // Entity fields can be set based on event parameters
-//   entity.implementation = event.params.implementation;
+export function handleUpgraded(event: Upgraded): void {
+  let id =
+    event.transaction.hash.toHexString() + ":" + event.logIndex.toHexString();
 
-//   // Entities can be written to the store with `.save()`
-//   entity.save();
+  log.info("handleUpgraded - implementation: {}", [
+    event.params.implementation.toString(),
+  ]);
 
-//   // Note: If a handler doesn't require existing field values, it is faster
-//   // _not_ to load the entity from the store. Instead, create it fresh with
-//   // `new Entity(...)`, set the fields that should be updated and save the
-//   // entity back to the store. Fields that were not set or unset remain
-//   // unchanged, allowing for partial updates to be applied.
+  let entity = new ProxyEvent(id);
+  entity.timestamp = event.block.timestamp;
+  entity.blockNumber = event.block.number;
+  entity.blockHash = event.block.hash;
+  entity.transactionHash = event.transaction.hash;
 
-//   // It is also possible to access smart contracts from mappings. For
-//   // example, the contract that has emitted the event can be connected to
-//   // with:
-//   //
-//   // let contract = Contract.bind(event.address)
-//   //
-//   // The following functions can then be called on this contract to access
-//   // state variables and other data:
-//   //
-//   // - contract.MAIN_DISPATCHER_SAFEGUARD_SLOT(...)
-//   // - contract.PROXY_GOVERNANCE_TAG(...)
-//   // - contract.UPGRADE_DELAY_SLOT(...)
-//   // - contract.getUpgradeActivationDelay(...)
-//   // - contract.implementation(...)
-//   // - contract.isNotFinalized(...)
-//   // - contract.proxyIsGovernor(...)
-// }
-
-// export function handleImplementationAdded(event: ImplementationAdded): void {}
-
-// export function handleImplementationRemoved(
-//   event: ImplementationRemoved
-// ): void {}
-
-// export function handleLogNewGovernorAccepted(
-//   event: LogNewGovernorAccepted
-// ): void {}
-
-// export function handleLogNominatedGovernor(event: LogNominatedGovernor): void {}
-
-// export function handleLogNominationCancelled(
-//   event: LogNominationCancelled
-// ): void {}
-
-// export function handleLogRemovedGovernor(event: LogRemovedGovernor): void {}
-
-// export function handleUpgraded(event: Upgraded): void {}
+  entity.implementation = event.params.implementation;
+  entity.save();
+}

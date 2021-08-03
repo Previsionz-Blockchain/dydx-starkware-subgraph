@@ -1,4 +1,9 @@
-interface Fact {
+enum ProxyEventType {
+  ADDED
+  UPGRADED
+}
+
+interface Event {
   id: ID!
   blockNumber: BigInt!
   blockHash: Bytes!
@@ -6,7 +11,7 @@ interface Fact {
   timestamp: BigInt!
 }
 
-type StateTransitionFact implements Fact @entity {
+type StateTransitionFact implements Event @entity {
   id: ID!
   blockNumber: BigInt!
   blockHash: Bytes!
@@ -15,7 +20,7 @@ type StateTransitionFact implements Fact @entity {
   # memoryPageFacts: [MemoryPageFact!]! @derivedFrom(field: "stateTransitionFact")
 }
 
-type MemoryPageFact implements Fact @entity {
+type MemoryPageFact implements Event @entity {
   id: ID!
   blockNumber: BigInt!
   blockHash: Bytes!
@@ -28,7 +33,7 @@ type MemoryPageFact implements Fact @entity {
   prod: BigInt!
 }
 
-type MemoryPageHash implements Fact @entity {
+type MemoryPageHash implements Event @entity {
   id: ID!
   blockNumber: BigInt!
   blockHash: Bytes!
@@ -37,4 +42,17 @@ type MemoryPageHash implements Fact @entity {
 
   factHash: Bytes!
   pagesHashes: [Bytes!]!
+}
+
+type ProxyEvent implements Event @entity {
+  id: ID!
+  blockNumber: BigInt!
+  blockHash: Bytes!
+  transactionHash: Bytes!
+  timestamp: BigInt!
+
+  type: ProxyEventType!
+  implementation: Bytes!
+  initializer: Bytes
+  finalize: Boolean
 }

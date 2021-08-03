@@ -43,12 +43,33 @@ dataSources:
           handler: handleLogMemoryPageFactContinuous
       file: ./src/mapping.ts
   - kind: ethereum/contract
-    name: GpsStatementVerifier
+    name: CallProxy
     network: mainnet
     source:
       address: "0xC8c212f11f6ACca77A7afeB7282dEBa5530eb46C"
-      abi: GpsStatementVerifier
+      abi: CallProxy
       startBlock: 12004790
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - ProxyEvent
+      abis:
+        - name: CallProxy
+          file: ./abis/CallProxy.json
+      eventHandlers:
+        - event: ImplementationAdded(indexed address,bytes,bool)
+          handler: handleImplementationAdded
+        - event: Upgraded(indexed address)
+          handler: handleUpgraded
+      file: ./src/mapping.ts
+templates:
+  - kind: ethereum/contract
+    name: GpsStatementVerifier
+    network: mainnet
+    source:
+      abi: GpsStatementVerifier
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
