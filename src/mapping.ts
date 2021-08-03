@@ -103,6 +103,7 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
   entity.implementation = event.params.implementation;
   entity.initializer = event.params.initializer;
   entity.finalize = event.params.finalize;
+  entity.type = "ADDED";
   entity.save();
 }
 
@@ -121,5 +122,6 @@ export function handleUpgraded(event: Upgraded): void {
   entity.transactionHash = event.transaction.hash;
 
   entity.implementation = event.params.implementation;
+  entity.type = "UPGRADED";
   entity.save();
 }
