@@ -27,3 +27,14 @@ type MemoryPageFact implements Fact @entity {
   memoryHash: BigInt!
   prod: BigInt!
 }
+
+type MemoryPageHash implements Fact @entity {
+  id: ID!
+  blockNumber: BigInt!
+  blockHash: Bytes!
+  transactionHash: Bytes!
+  timestamp: BigInt!
+
+  factHash: Bytes!
+  pagesHashes: [Bytes!]!
+}

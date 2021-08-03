@@ -42,3 +42,23 @@ dataSources:
         - event: LogMemoryPageFactContinuous(bytes32,uint256,uint256)
           handler: handleLogMemoryPageFactContinuous
       file: ./src/mapping.ts
+  - kind: ethereum/contract
+    name: GpsStatementVerifier
+    network: mainnet
+    source:
+      address: "0xC8c212f11f6ACca77A7afeB7282dEBa5530eb46C"
+      abi: GpsStatementVerifier
+      startBlock: 12004790
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      entities:
+        - MemoryPageHash
+      abis:
+        - name: GpsStatementVerifier
+          file: ./abis/GpsStatementVerifier.json
+      eventHandlers:
+        - event: LogMemoryPagesHashes(bytes32,bytes32[])
+          handler: handleLogMemoryPagesHashes
+      file: ./src/mapping.ts
