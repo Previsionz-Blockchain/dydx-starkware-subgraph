@@ -16,6 +16,8 @@ import {
 } from "../generated/schema";
 import { GpsStatementVerifier } from "../generated/templates";
 
+export { runTests } from "./tests";
+
 /**
  * In python: main_contract_events
  */
