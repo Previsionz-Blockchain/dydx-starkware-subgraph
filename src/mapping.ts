@@ -109,7 +109,9 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
   entity.type = "ADDED";
   entity.save();
 
-  GpsStatementVerifier.create(event.params.initializer as Address);
+  GpsStatementVerifier.create(
+    Address.fromString(event.params.initializer.toHex())
+  );
 }
 
 export function handleUpgraded(event: Upgraded): void {
