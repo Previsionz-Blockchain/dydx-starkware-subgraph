@@ -7,7 +7,6 @@ import {
   Upgraded,
 } from "../generated/CallProxy/CallProxy";
 import { LogMemoryPagesHashes } from "../generated/templates/GpsStatementVerifier/GpsStatementVerifier";
-export { runTests } from "./mapping.test";
 
 import {
   StateTransitionFact,
@@ -17,7 +16,7 @@ import {
 } from "../generated/schema";
 import { GpsStatementVerifier } from "../generated/templates";
 
-export { runTests } from "./tests";
+export { runTests } from "./mapping.test";
 
 /**
  * In python: main_contract_events
