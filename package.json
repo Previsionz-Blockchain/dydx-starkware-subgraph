@@ -11,7 +11,7 @@
     "test": "graph build && ./matchstick CallProxy"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.20.1",
+    "@graphprotocol/graph-cli": "0.21.1",
     "@graphprotocol/graph-ts": "0.20.0",
     "matchstick-as": "^0.0.3"
   }
