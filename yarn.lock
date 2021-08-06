@@ -241,7 +241,7 @@ asn1@~0.2.3:
 
 assemblyscript@^0.19.3:
   version "0.19.10"
-  resolved "https://registry.npmjs.org/assemblyscript/-/assemblyscript-0.19.10.tgz#7ede6d99c797a219beb4fa4614c3eab9e6343c8e"
+  resolved "https://registry.yarnpkg.com/assemblyscript/-/assemblyscript-0.19.10.tgz#7ede6d99c797a219beb4fa4614c3eab9e6343c8e"
   integrity sha512-HavcUBXB3mBTRGJcpvaQjmnmaqKHBGREjSPNsIvnAk2f9dj78y4BkMaSSdvBQYWcDDzsHQjyUC8stICFkD1Odg==
   dependencies:
     binaryen "101.0.0-nightly.20210723"
@@ -344,7 +344,7 @@ binary-extensions@^2.0.0:
 
 binaryen@101.0.0-nightly.20210723:
   version "101.0.0-nightly.20210723"
-  resolved "https://registry.npmjs.org/binaryen/-/binaryen-101.0.0-nightly.20210723.tgz#b6bb7f3501341727681a03866c0856500eec3740"
+  resolved "https://registry.yarnpkg.com/binaryen/-/binaryen-101.0.0-nightly.20210723.tgz#b6bb7f3501341727681a03866c0856500eec3740"
   integrity sha512-eioJNqhHlkguVSbblHOtLqlhtC882SOEPKmNFZaDuz1hzQjolxZ+eu3/kaS10n3sGPONsIZsO7R9fR00UyhEUA==
 
 binaryen@77.0.0-nightly.20190407:
@@ -1880,7 +1880,7 @@ mafmt@^7.0.0:
 
 matchstick-as@^0.0.3:
   version "0.0.3"
-  resolved "https://registry.npmjs.org/matchstick-as/-/matchstick-as-0.0.3.tgz#4fe8ff6242b420869d4901fd2ec8d0abcc1f25a7"
+  resolved "https://registry.yarnpkg.com/matchstick-as/-/matchstick-as-0.0.3.tgz#4fe8ff6242b420869d4901fd2ec8d0abcc1f25a7"
   integrity sha512-dWxX0n6QuJcfJ9PnDnaGHlu1+9RZHJ++G5HYKRskbcXAuzf1jxHcCwosl0WGU/yi9kXjlC/BaQKsKOGZ18c37Q==
   dependencies:
     "@graphprotocol/graph-ts" "0.20.0"
