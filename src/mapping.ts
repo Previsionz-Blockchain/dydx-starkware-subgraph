@@ -1,4 +1,4 @@
-import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log, ethereum } from "@graphprotocol/graph-ts";
 
 import { LogStateTransitionFact } from "../generated/StarkPerpetual/StarkPerpetual";
 import { LogMemoryPageFactContinuous } from "../generated/MemoryPageFactRegistry/MemoryPageFactRegistry";
