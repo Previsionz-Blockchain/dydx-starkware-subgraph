@@ -1,5 +1,6 @@
 import { Address, Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { clearStore, test } from "matchstick-as/assembly/index";
+import { clearStore, test, addMetadata } from "matchstick-as/assembly/index";
+// import { log } from "matchstick-as/assembly/log";
 import { ImplementationAdded } from "../generated/CallProxy/CallProxy";
 
 import { handleImplementationAdded } from "./mapping";
@@ -9,7 +10,8 @@ function createImplementationAddedEvent(
   initializer: string,
   finalize: boolean
 ): ImplementationAdded {
-  let newImplementationAdded = new ImplementationAdded();
+  let base: ImplementationAdded = new ImplementationAdded();
+  let newImplementationAdded = addMetadata(base) as ImplementationAdded;
   newImplementationAdded.parameters = new Array<ethereum.EventParam>();
 
   let implementationParam = new ethereum.EventParam();
@@ -39,5 +41,6 @@ export function runTests(): void {
       "0x000000000000000000000000894c4a12548fb18eaa48cf34f9cd874fc08b7fc3",
       false
     );
+    handleImplementationAdded(implementationAddedEvent);
   });
 }

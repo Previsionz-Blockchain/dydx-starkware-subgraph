@@ -96,7 +96,7 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
     event.transaction.hash.toHexString() + ":" + event.logIndex.toHexString();
 
   log.info("handleImplementationAdded - implementation: {}", [
-    event.params.implementation.toString(),
+    event.params.implementation.toHexString(),
   ]);
 
   let entity = new ProxyEvent(id);
@@ -111,8 +111,10 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
   entity.type = "ADDED";
   entity.save();
 
+  let contractAddress = "0x" + event.params.initializer.toHexString().slice(26);
+
   GpsStatementVerifier.create(
-    Address.fromString(event.params.initializer.toHex())
+    Address.fromHexString(contractAddress) as Address
   );
 }
 
