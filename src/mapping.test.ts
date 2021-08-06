@@ -24,6 +24,8 @@ function createImplementationAddedEvent(
 
 export function runTests(): void {
     test("test name", () => {
-
+        let implementationAddedEvent = createImplementationAddedEvent(
+            "0x89205A3A3b2A69De6Dbf7f01ED13B2108B2c43e7"
+          );
     })
 }
