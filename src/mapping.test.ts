@@ -10,16 +10,16 @@ function createImplementationAddedEvent(
     //   finalize: boolean
 ): ImplementationAdded {
     let newImplementationAdded = new ImplementationAdded();
-    ImplementationAdded.parameters = new Array<ethereum.EventParam>();
+    newImplementationAdded.parameters = new Array<ethereum.EventParam>();
 
     let implementationParam = new ethereum.EventParam();
     implementationParam.value = ethereum.Value.fromAddress(
         Address.fromString(implementation)
     );
 
-    ImplementationAdded.parameters.push(implementationParam);
+    newImplementationAdded.parameters.push(implementationParam);
 
-    return ImplementationAdded;
+    return newImplementationAdded;
 }
 
 export function runTests(): void {
