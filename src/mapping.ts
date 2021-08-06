@@ -7,6 +7,7 @@ import {
   Upgraded,
 } from "../generated/CallProxy/CallProxy";
 import { LogMemoryPagesHashes } from "../generated/templates/GpsStatementVerifier/GpsStatementVerifier";
+export { runTests } from "./mapping.test";
 
 import {
   StateTransitionFact,
