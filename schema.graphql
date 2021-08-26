@@ -29,7 +29,7 @@ type MemoryPageFact implements Event @entity {
 
   stateTransitionFact: Bytes!
   factHash: Bytes!
-  memoryHash: Bytes!
+  memoryHash: String!
   prod: BigInt!
 }
 
@@ -42,6 +42,15 @@ type MemoryPageHash implements Event @entity {
 
   factHash: Bytes!
   pagesHashes: [Bytes!]!
+}
+
+type MemoryPage @entity {
+  id: ID! # transactionId
+  startAddr: BigInt
+  values: [BigInt!]!
+  z: BigInt
+  alpha: BigInt
+  prime: BigInt
 }
 
 type ProxyEvent implements Event @entity {

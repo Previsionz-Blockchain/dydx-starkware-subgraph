@@ -8,7 +8,10 @@ import {
 } from "@graphprotocol/graph-ts";
 
 import { LogStateTransitionFact } from "../generated/StarkPerpetual/StarkPerpetual";
-import { LogMemoryPageFactContinuous } from "../generated/MemoryPageFactRegistry/MemoryPageFactRegistry";
+import {
+  LogMemoryPageFactContinuous,
+  RegisterContinuousMemoryPageCall,
+} from "../generated/MemoryPageFactRegistry/MemoryPageFactRegistry";
 import {
   ImplementationAdded,
   Upgraded,
@@ -20,6 +23,7 @@ import {
   MemoryPageFact,
   MemoryPageHash,
   ProxyEvent,
+  MemoryPage,
 } from "../generated/schema";
 import { GpsStatementVerifier } from "../generated/templates";
 
@@ -67,7 +71,7 @@ export function handleLogMemoryPageFactContinuous(
   entity.transactionHash = event.transaction.hash;
 
   entity.factHash = factHash;
-  entity.memoryHash = Bytes.fromHexString(memoryHash.toHex()) as Bytes;
+  entity.memoryHash = memoryHash.toHexString();
   entity.prod = event.params.prod;
   entity.stateTransitionFact = factHash;
   entity.save();
@@ -91,7 +95,7 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
   entity.timestamp = event.block.timestamp;
   entity.blockNumber = event.block.number;
   entity.blockHash = event.block.hash;
-  entity.transactionHash = event.transaction.hash; // = memoryHash?
+  entity.transactionHash = event.transaction.hash;
 
   entity.factHash = factHash;
   entity.pagesHashes = pagesHashes;
@@ -142,4 +146,17 @@ export function handleUpgraded(event: Upgraded): void {
   entity.implementation = event.params.implementation;
   entity.type = "UPGRADED";
   entity.save();
+}
+
+export function handleRegisterContinuousMemoryPage(
+  call: RegisterContinuousMemoryPageCall
+): void {
+  let id = call.transaction.hash.toHex();
+  let memoryPage = new MemoryPage(id);
+  memoryPage.startAddr = call.inputs.startAddr;
+  memoryPage.values = call.inputs.values;
+  memoryPage.z = call.inputs.z;
+  memoryPage.alpha = call.inputs.alpha;
+  memoryPage.prime = call.inputs.prime;
+  memoryPage.save();
 }
