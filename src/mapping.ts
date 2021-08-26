@@ -1,4 +1,11 @@
-import { Address, BigInt, log, ethereum } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  BigInt,
+  log,
+  ethereum,
+  Bytes,
+  ByteArray,
+} from "@graphprotocol/graph-ts";
 
 import { LogStateTransitionFact } from "../generated/StarkPerpetual/StarkPerpetual";
 import { LogMemoryPageFactContinuous } from "../generated/MemoryPageFactRegistry/MemoryPageFactRegistry";
@@ -60,7 +67,7 @@ export function handleLogMemoryPageFactContinuous(
   entity.transactionHash = event.transaction.hash;
 
   entity.factHash = factHash;
-  entity.memoryHash = memoryHash;
+  entity.memoryHash = Bytes.fromHexString(memoryHash.toHex()) as Bytes;
   entity.prod = event.params.prod;
   entity.stateTransitionFact = factHash;
   entity.save();
@@ -84,7 +91,7 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
   entity.timestamp = event.block.timestamp;
   entity.blockNumber = event.block.number;
   entity.blockHash = event.block.hash;
-  entity.transactionHash = event.transaction.hash;
+  entity.transactionHash = event.transaction.hash; // = memoryHash?
 
   entity.factHash = factHash;
   entity.pagesHashes = pagesHashes;
