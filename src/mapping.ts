@@ -130,9 +130,9 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
 
   let contractAddress = "0x" + event.params.initializer.toHexString().slice(26);
 
-  GpsStatementVerifier.create(
-    Address.fromHexString(contractAddress) as Address
-  );
+  // GpsStatementVerifier.create(
+  //   Address.fromHexString(contractAddress) as Address
+  // );
 }
 
 export function handleUpgraded(event: Upgraded): void {
