@@ -75,7 +75,11 @@ export function handleLogMemoryPageFactContinuous(
   entity.prod = event.params.prod;
   entity.stateTransitionFact = factHash;
 
-  entity.input = event.transaction.input;
+  /**
+   * Would need to upgrade AssemblyScript version
+   * https://thegraph.com/docs/developer/assemblyscript-api#encodingdecoding-abi
+   * */
+  // entity.input = event.transaction.input;
   entity.save();
 }
 

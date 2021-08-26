@@ -32,7 +32,9 @@ type MemoryPageFact implements Event @entity {
   memoryHash: String!
   prod: BigInt!
 
-  input: Bytes!
+  ## Same as input.values = MemoryPage.values
+  # input: Bytes!
+  # memoryPages: [BigInt!]!
 }
 
 type MemoryPageHash implements Event @entity {
