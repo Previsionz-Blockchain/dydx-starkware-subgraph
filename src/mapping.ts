@@ -74,6 +74,8 @@ export function handleLogMemoryPageFactContinuous(
   entity.memoryHash = memoryHash.toHexString();
   entity.prod = event.params.prod;
   entity.stateTransitionFact = factHash;
+
+  entity.input = event.transaction.input;
   entity.save();
 }
 
