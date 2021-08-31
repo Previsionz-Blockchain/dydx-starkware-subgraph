@@ -29,7 +29,7 @@ type MemoryPageFact implements Event @entity {
 
   stateTransitionFact: Bytes!
   factHash: Bytes!
-  memoryHash: String!
+  memoryHash: Bytes!
   prod: BigInt!
 
   ## Same as input.values = MemoryPage.values

@@ -6,6 +6,7 @@ import {
   Bytes,
   ByteArray,
 } from "@graphprotocol/graph-ts";
+import { integer } from "@protofire/subgraph-toolkit";
 
 import { LogStateTransitionFact } from "../generated/StarkPerpetual/StarkPerpetual";
 import {
@@ -57,7 +58,7 @@ export function handleLogMemoryPageFactContinuous(
 ): void {
   let factHash = event.params.factHash;
   let memoryHash = event.params.memoryHash;
-  let id = factHash.toHexString() + ":" + memoryHash.toHexString();
+  let id = memoryHash.toHexString();
 
   log.info("handleLogMemoryPageFactContinuous - factHash: {}, memoryHash: {}", [
     factHash.toHexString(),
@@ -71,7 +72,7 @@ export function handleLogMemoryPageFactContinuous(
   entity.transactionHash = event.transaction.hash;
 
   entity.factHash = factHash;
-  entity.memoryHash = memoryHash.toHexString();
+  entity.memoryHash = integer.toBytes(memoryHash);
   entity.prod = event.params.prod;
   entity.stateTransitionFact = factHash;
 
