@@ -28,7 +28,7 @@ import {
 } from "../generated/schema";
 import { GpsStatementVerifier } from "../generated/templates";
 
-export { runTests } from "./mapping.test";
+// export { runTests } from "./mapping.test";
 
 /**
  * In python: main_contract_events
@@ -43,44 +43,11 @@ export function handleLogStateTransitionFact(
   ]);
 
   let entity = new StateTransitionFact(stateTransitionFact);
+  entity.stateTransitionFact = event.params.stateTransitionFact;
   entity.timestamp = event.block.timestamp;
   entity.blockNumber = event.block.number;
   entity.blockHash = event.block.hash;
   entity.transactionHash = event.transaction.hash;
-  entity.save();
-}
-
-/**
- * In python: memory_page_map
- */
-export function handleLogMemoryPageFactContinuous(
-  event: LogMemoryPageFactContinuous
-): void {
-  let factHash = event.params.factHash;
-  let memoryHash = event.params.memoryHash;
-  let id = memoryHash.toHexString();
-
-  log.info("handleLogMemoryPageFactContinuous - factHash: {}, memoryHash: {}", [
-    factHash.toHexString(),
-    memoryHash.toString(),
-  ]);
-
-  let entity = new MemoryPageFact(id);
-  entity.timestamp = event.block.timestamp;
-  entity.blockNumber = event.block.number;
-  entity.blockHash = event.block.hash;
-  entity.transactionHash = event.transaction.hash;
-
-  entity.factHash = factHash;
-  entity.memoryHash = integer.toBytes(memoryHash);
-  entity.prod = event.params.prod;
-  entity.stateTransitionFact = factHash;
-
-  /**
-   * Would need to upgrade AssemblyScript version
-   * https://thegraph.com/docs/developer/assemblyscript-api#encodingdecoding-abi
-   * */
-  // entity.input = event.transaction.input;
   entity.save();
 }
 
@@ -106,7 +73,67 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
 
   entity.factHash = factHash;
   entity.pagesHashes = pagesHashes;
+
+  entity.stateTransitionFact = event.params.factHash.toHexString();
+
+  let memoryPageFacts = new Array<string>();
+  for (let i = 0; i < pagesHashes.length; i++) {
+    memoryPageFacts.push(pagesHashes[i].toHexString());
+  }
+
+  entity.memoryPageFacts = memoryPageFacts;
+
   entity.save();
+}
+
+/**
+ * In python: memory_page_map
+ */
+export function handleLogMemoryPageFactContinuous(
+  event: LogMemoryPageFactContinuous
+): void {
+  let factHash = event.params.factHash;
+  let memoryHash = event.params.memoryHash;
+  let id = integer.toBytes(memoryHash).toHexString();
+
+  log.info("handleLogMemoryPageFactContinuous - factHash: {}, memoryHash: {}", [
+    factHash.toHexString(),
+    integer.toBytes(memoryHash).toString(),
+  ]);
+
+  let entity = new MemoryPageFact(id);
+  entity.timestamp = event.block.timestamp;
+  entity.blockNumber = event.block.number;
+  entity.blockHash = event.block.hash;
+  entity.transactionHash = event.transaction.hash;
+
+  entity.factHash = factHash;
+  entity.memoryHash = integer.toBytes(memoryHash);
+  entity.prod = event.params.prod;
+  entity.stateTransitionFact = factHash;
+
+  entity.memoryPage = event.transaction.hash.toHex();
+
+  /**
+   * Would need to upgrade AssemblyScript version
+   * https://thegraph.com/docs/developer/assemblyscript-api#encodingdecoding-abi
+   * */
+  // entity.input = event.transaction.input;
+  entity.save();
+}
+
+export function handleRegisterContinuousMemoryPage(
+  call: RegisterContinuousMemoryPageCall
+): void {
+  let id = call.transaction.hash.toHex();
+  let memoryPage = new MemoryPage(id);
+  memoryPage.transactionHash = call.transaction.hash;
+  memoryPage.startAddr = call.inputs.startAddr;
+  memoryPage.values = call.inputs.values;
+  memoryPage.z = call.inputs.z;
+  memoryPage.alpha = call.inputs.alpha;
+  memoryPage.prime = call.inputs.prime;
+  memoryPage.save();
 }
 
 export function handleImplementationAdded(event: ImplementationAdded): void {
@@ -131,9 +158,9 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
 
   let contractAddress = "0x" + event.params.initializer.toHexString().slice(26);
 
-  // GpsStatementVerifier.create(
-  //   Address.fromHexString(contractAddress) as Address
-  // );
+  GpsStatementVerifier.create(
+    Address.fromHexString(contractAddress) as Address
+  );
 }
 
 export function handleUpgraded(event: Upgraded): void {
@@ -153,17 +180,4 @@ export function handleUpgraded(event: Upgraded): void {
   entity.implementation = event.params.implementation;
   entity.type = "UPGRADED";
   entity.save();
-}
-
-export function handleRegisterContinuousMemoryPage(
-  call: RegisterContinuousMemoryPageCall
-): void {
-  let id = call.transaction.hash.toHex();
-  let memoryPage = new MemoryPage(id);
-  memoryPage.startAddr = call.inputs.startAddr;
-  memoryPage.values = call.inputs.values;
-  memoryPage.z = call.inputs.z;
-  memoryPage.alpha = call.inputs.alpha;
-  memoryPage.prime = call.inputs.prime;
-  memoryPage.save();
 }

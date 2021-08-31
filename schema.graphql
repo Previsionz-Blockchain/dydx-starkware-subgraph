@@ -13,11 +13,28 @@ interface Event {
 
 type StateTransitionFact implements Event @entity {
   id: ID!
+  stateTransitionFact: Bytes!
   blockNumber: BigInt!
   blockHash: Bytes!
   transactionHash: Bytes!
   timestamp: BigInt!
-  # memoryPageFacts: [MemoryPageFact!]! @derivedFrom(field: "stateTransitionFact")
+
+  memoryPageHashes: [MemoryPageHash!]!
+    @derivedFrom(field: "stateTransitionFact")
+}
+
+type MemoryPageHash implements Event @entity {
+  id: ID!
+  blockNumber: BigInt!
+  blockHash: Bytes!
+  transactionHash: Bytes!
+  timestamp: BigInt!
+
+  factHash: Bytes!
+  pagesHashes: [Bytes!]!
+
+  stateTransitionFact: StateTransitionFact
+  memoryPageFacts: [MemoryPageFact!]!
 }
 
 type MemoryPageFact implements Event @entity {
@@ -32,29 +49,24 @@ type MemoryPageFact implements Event @entity {
   memoryHash: Bytes!
   prod: BigInt!
 
+  memoryPageHash: MemoryPageHash @derivedFrom(field: "memoryPageFacts")
+  memoryPage: MemoryPage
+
   ## Same as input.values = MemoryPage.values
   # input: Bytes!
   # memoryPages: [BigInt!]!
 }
 
-type MemoryPageHash implements Event @entity {
-  id: ID!
-  blockNumber: BigInt!
-  blockHash: Bytes!
-  transactionHash: Bytes!
-  timestamp: BigInt!
-
-  factHash: Bytes!
-  pagesHashes: [Bytes!]!
-}
-
 type MemoryPage @entity {
   id: ID! # transactionId
+  transactionHash: Bytes!
   startAddr: BigInt
   values: [BigInt!]!
   z: BigInt
   alpha: BigInt
   prime: BigInt
+
+  memoryPageFact: MemoryPageFact @derivedFrom(field: "memoryPage")
 }
 
 type ProxyEvent implements Event @entity {
