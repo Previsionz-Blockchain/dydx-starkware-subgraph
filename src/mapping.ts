@@ -1,12 +1,4 @@
-import {
-  Address,
-  BigInt,
-  log,
-  ethereum,
-  Bytes,
-  ByteArray,
-} from "@graphprotocol/graph-ts";
-import { integer } from "@protofire/subgraph-toolkit";
+import { Address, log } from "@graphprotocol/graph-ts";
 
 import { LogStateTransitionFact } from "../generated/StarkPerpetual/StarkPerpetual";
 import {
@@ -29,6 +21,10 @@ import {
 import { GpsStatementVerifier } from "../generated/templates";
 
 // export { runTests } from "./mapping.test";
+
+function hexZeroPad(hexstring: string, length: i32 = 32): string {
+  return hexstring.substr(0, 2) + hexstring.substr(2).padStart(length * 2, "0");
+}
 
 /**
  * In python: main_contract_events
@@ -77,11 +73,14 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
   entity.stateTransitionFact = event.params.factHash.toHexString();
 
   let memoryPageFacts = new Array<string>();
+  let pagesHashesString = new Array<string>();
   for (let i = 0; i < pagesHashes.length; i++) {
     memoryPageFacts.push(pagesHashes[i].toHexString());
+    pagesHashesString.push(pagesHashes[i].toHexString());
   }
 
   entity.memoryPageFacts = memoryPageFacts;
+  entity.pagesHashesString = pagesHashesString;
 
   entity.save();
 }
@@ -94,11 +93,11 @@ export function handleLogMemoryPageFactContinuous(
 ): void {
   let factHash = event.params.factHash;
   let memoryHash = event.params.memoryHash;
-  let id = integer.toBytes(memoryHash).toHexString();
+  let id = hexZeroPad(memoryHash.toHexString());
 
   log.info("handleLogMemoryPageFactContinuous - factHash: {}, memoryHash: {}", [
     factHash.toHexString(),
-    integer.toBytes(memoryHash).toString(),
+    hexZeroPad(memoryHash.toHexString()),
   ]);
 
   let entity = new MemoryPageFact(id);
@@ -108,7 +107,7 @@ export function handleLogMemoryPageFactContinuous(
   entity.transactionHash = event.transaction.hash;
 
   entity.factHash = factHash;
-  entity.memoryHash = integer.toBytes(memoryHash);
+  entity.memoryHash = memoryHash;
   entity.prod = event.params.prod;
   entity.stateTransitionFact = factHash;
 

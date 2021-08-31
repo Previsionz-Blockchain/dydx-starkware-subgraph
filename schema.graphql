@@ -32,6 +32,7 @@ type MemoryPageHash implements Event @entity {
 
   factHash: Bytes!
   pagesHashes: [Bytes!]!
+  pagesHashesString: [String!]!
 
   stateTransitionFact: StateTransitionFact
   memoryPageFacts: [MemoryPageFact!]!
@@ -46,7 +47,7 @@ type MemoryPageFact implements Event @entity {
 
   stateTransitionFact: Bytes!
   factHash: Bytes!
-  memoryHash: Bytes!
+  memoryHash: BigInt!
   prod: BigInt!
 
   memoryPageHash: MemoryPageHash @derivedFrom(field: "memoryPageFacts")

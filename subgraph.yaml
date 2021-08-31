@@ -41,9 +41,9 @@ dataSources:
       eventHandlers:
         - event: LogMemoryPageFactContinuous(bytes32,uint256,uint256)
           handler: handleLogMemoryPageFactContinuous
-      callHandlers:
-        - function: registerContinuousMemoryPage(uint256,uint256[],uint256,uint256,uint256)
-          handler: handleRegisterContinuousMemoryPage
+      # callHandlers:
+      #   - function: registerContinuousMemoryPage(uint256,uint256[],uint256,uint256,uint256)
+      #     handler: handleRegisterContinuousMemoryPage
       file: ./src/mapping.ts
   - kind: ethereum/contract
     name: CallProxy
