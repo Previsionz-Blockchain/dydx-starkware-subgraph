@@ -11,7 +11,7 @@ dataSources:
       startBlock: 11834295
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - StateTransitionFact
@@ -31,7 +31,7 @@ dataSources:
       startBlock: 11813182
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - MemoryPageFact
@@ -54,7 +54,7 @@ dataSources:
       startBlock: 12004790
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - ProxyEvent
@@ -75,7 +75,7 @@ templates:
       abi: GpsStatementVerifier
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
         - MemoryPageHash
