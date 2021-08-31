@@ -32,7 +32,6 @@ type MemoryPageHash implements Event @entity {
 
   factHash: Bytes!
   pagesHashes: [Bytes!]!
-  pagesHashesString: [String!]!
 
   stateTransitionFact: StateTransitionFact
   memoryPageFacts: [MemoryPageFact!]!

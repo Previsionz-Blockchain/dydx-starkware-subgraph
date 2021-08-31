@@ -73,14 +73,11 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
   entity.stateTransitionFact = event.params.factHash.toHexString();
 
   let memoryPageFacts = new Array<string>();
-  let pagesHashesString = new Array<string>();
   for (let i = 0; i < pagesHashes.length; i++) {
     memoryPageFacts.push(pagesHashes[i].toHexString());
-    pagesHashesString.push(pagesHashes[i].toHexString());
   }
 
   entity.memoryPageFacts = memoryPageFacts;
-  entity.pagesHashesString = pagesHashesString;
 
   entity.save();
 }
