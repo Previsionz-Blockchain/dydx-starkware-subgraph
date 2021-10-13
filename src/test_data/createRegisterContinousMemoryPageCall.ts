@@ -4,12 +4,16 @@ import { ADDRESSES } from "./constants";
 import { block12504768 } from "./block12504768";
 import { tx0xaeef5ea449f5b37a2ee28179f5d782c0d708dac562c08cc1a3af113bf6807148 } from "./tx0xaeef5ea449f5b37a2ee28179f5d782c0d708dac562c08cc1a3af113bf6807148";
 
-export function createRegisterContinousMemoryPageCall() {
-  let inputValues: ethereum.EventParam[] = new Array<ethereum.EventParam>(
+export function createRegisterContinousMemoryPageCall(): RegisterContinuousMemoryPageCall {
+  let inputValues: ethereum.EventParam[] = new Array<ethereum.EventParam>();
+
+  inputValues.push(
     new ethereum.EventParam(
       "startAddr",
       ethereum.Value.fromUnsignedBigInt(BigInt.fromString("13767862"))
-    ),
+    )
+  );
+  inputValues.push(
     new ethereum.EventParam(
       "values",
       ethereum.Value.fromUnsignedBigIntArray([
@@ -1538,7 +1542,9 @@ export function createRegisterContinousMemoryPageCall() {
           "1583521356023866468164664413133378558115817240647825356699579285956145144130"
         ),
       ])
-    ),
+    )
+  );
+  inputValues.push(
     new ethereum.EventParam(
       "z",
       ethereum.Value.fromUnsignedBigInt(
@@ -1546,7 +1552,9 @@ export function createRegisterContinousMemoryPageCall() {
           "227200206119168001493339315413225180776931398740529232608594469021612113096"
         )
       )
-    ),
+    )
+  );
+  inputValues.push(
     new ethereum.EventParam(
       "alpha",
       ethereum.Value.fromUnsignedBigInt(
@@ -1554,7 +1562,9 @@ export function createRegisterContinousMemoryPageCall() {
           "1787907482623567322245024051979877596550791148104953454449337286682421634300"
         )
       )
-    ),
+    )
+  );
+  inputValues.push(
     new ethereum.EventParam(
       "prime",
       ethereum.Value.fromUnsignedBigInt(
@@ -1568,8 +1578,8 @@ export function createRegisterContinousMemoryPageCall() {
   let outputValues: ethereum.EventParam[] = new Array<ethereum.EventParam>();
 
   return new RegisterContinuousMemoryPageCall(
-    ADDRESSES["dYdX: Memory Page Fact Registry"],
-    ADDRESSES["dYdX: L2 On-Chain Operator"],
+    ADDRESSES.get("dYdX: Memory Page Fact Registry"),
+    ADDRESSES.get("dYdX: L2 On-Chain Operator"),
     block12504768,
     tx0xaeef5ea449f5b37a2ee28179f5d782c0d708dac562c08cc1a3af113bf6807148,
     inputValues,
