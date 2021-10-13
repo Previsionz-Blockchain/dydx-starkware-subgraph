@@ -1,16 +1,15 @@
-import {
-  Address,
-  Bytes,
-  ethereum,
-  TypedMap,
-  BigInt,
-} from "@graphprotocol/graph-ts";
+import { Address, Bytes, ethereum, TypedMap } from "@graphprotocol/graph-ts";
 import { clearStore, test, newMockEvent } from "matchstick-as/assembly/index";
 // import { log } from "matchstick-as/assembly/log";
 import { ImplementationAdded } from "../generated/CallProxy/CallProxy";
+import { UNKNOWN_BYTES } from "./test_data/constants";
 
 // import { batchOnChainData } from "./batchOnChainData";
 import { handleImplementationAdded } from "./mapping";
+
+export class IAddresses {
+  [key: string]: Address;
+}
 
 function createImplementationAddedEvent(
   implementation: string,
@@ -60,6 +59,10 @@ export function runTests(): void {
       false
     );
     handleImplementationAdded(implementationAddedEvent);
+  });
+
+  test("add memory page", () => {
+    // let registerContinousMemoryPageCall =
   });
 
   // test("data parsing", () => {
