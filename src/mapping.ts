@@ -20,7 +20,7 @@ import {
 } from "../generated/schema";
 import { GpsStatementVerifier } from "../generated/templates";
 
-// export { runTests } from "./mapping.test";
+export { runTests } from "./mapping.test";
 
 function hexZeroPad(hexstring: string, length: i32 = 32): string {
   return hexstring.substr(0, 2) + hexstring.substr(2).padStart(length * 2, "0");
