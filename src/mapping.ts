@@ -140,10 +140,14 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
   let id =
     event.transaction.hash.toHexString() + ":" + event.logIndex.toHexString();
 
-  log.info("handleImplementationAdded - implementation: {}  txHash {}", [
-    event.params.implementation.toHexString(),
-    event.transaction.hash.toHexString(),
-  ]);
+  log.info(
+    "handleImplementationAdded - implementation: {}, txHash {}, initalizer: {}, ",
+    [
+      event.params.implementation.toHexString(),
+      event.transaction.hash.toHexString(),
+      event.params.initializer.toHexString(),
+    ]
+  );
 
   let entity = new ProxyEvent(id);
   entity.timestamp = event.block.timestamp;
@@ -157,14 +161,7 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
   entity.type = "ADDED";
   entity.save();
 
-  let contractAddress = hexZeroPad(
-    event.params.initializer.toHexString().slice(42),
-    20
-  );
-
-  GpsStatementVerifier.create(
-    Address.fromHexString(contractAddress) as Address
-  );
+  GpsStatementVerifier.create(event.params.implementation);
 }
 
 export function handleUpgraded(event: Upgraded): void {
