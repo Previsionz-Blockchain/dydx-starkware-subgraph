@@ -10,11 +10,11 @@
     "create-local": "graph create --node http://localhost:8020/ schmidsi/dydx-balances",
     "remove-local": "graph remove --node http://localhost:8020/ schmidsi/dydx-balances",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 schmidsi/dydx-balances",
-    "test": "graph build && ./matchstick CallProxy"
+    "test": "graph build && graph test CallProxy"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "^0.22.0-alpha.2",
-    "@graphprotocol/graph-ts": "^0.22.0-alpha.2",
-    "matchstick-as": "^0.0.3"
+    "@graphprotocol/graph-cli": "^0.22.3",
+    "@graphprotocol/graph-ts": "^0.22.1",
+    "matchstick-as": "^0.1.5"
   }
 }

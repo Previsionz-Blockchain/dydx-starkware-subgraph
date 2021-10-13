@@ -1,4 +1,5 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
+description: Subgraph indexing dYdX Starkware proofs
 schema:
   file: ./schema.graphql
 dataSources:
