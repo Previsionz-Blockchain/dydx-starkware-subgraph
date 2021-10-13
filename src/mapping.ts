@@ -1,4 +1,4 @@
-import { Address, log } from "@graphprotocol/graph-ts";
+import { Address, log, store } from "@graphprotocol/graph-ts";
 
 import { LogStateTransitionFact } from "../generated/StarkPerpetual/StarkPerpetual";
 import {
@@ -123,7 +123,11 @@ export function handleRegisterContinuousMemoryPage(
 ): void {
   let id = call.transaction.hash.toHex();
   let memoryPage = new MemoryPage(id);
+  memoryPage.blockNumber = call.block.number;
+  memoryPage.blockHash = call.block.hash;
+  memoryPage.timestamp = call.block.timestamp;
   memoryPage.transactionHash = call.transaction.hash;
+
   memoryPage.startAddr = call.inputs.startAddr;
   memoryPage.values = call.inputs.values;
   memoryPage.z = call.inputs.z;
@@ -136,8 +140,9 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
   let id =
     event.transaction.hash.toHexString() + ":" + event.logIndex.toHexString();
 
-  log.info("handleImplementationAdded - implementation: {}", [
+  log.info("handleImplementationAdded - implementation: {}  txHash {}", [
     event.params.implementation.toHexString(),
+    event.transaction.hash.toHexString(),
   ]);
 
   let entity = new ProxyEvent(id);
@@ -152,7 +157,10 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
   entity.type = "ADDED";
   entity.save();
 
-  let contractAddress = "0x" + event.params.initializer.toHexString().slice(26);
+  let contractAddress = hexZeroPad(
+    event.params.initializer.toHexString().slice(42),
+    20
+  );
 
   GpsStatementVerifier.create(
     Address.fromHexString(contractAddress) as Address
@@ -164,7 +172,7 @@ export function handleUpgraded(event: Upgraded): void {
     event.transaction.hash.toHexString() + ":" + event.logIndex.toHexString();
 
   log.info("handleUpgraded - implementation: {}", [
-    event.params.implementation.toString(),
+    event.params.implementation.toHexString(),
   ]);
 
   let entity = new ProxyEvent(id);

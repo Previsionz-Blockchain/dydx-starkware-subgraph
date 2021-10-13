@@ -59,7 +59,11 @@ type MemoryPageFact implements Event @entity {
 
 type MemoryPage @entity {
   id: ID! # transactionId
+  blockNumber: BigInt!
+  blockHash: Bytes!
   transactionHash: Bytes!
+  timestamp: BigInt!
+
   startAddr: BigInt
   values: [BigInt!]!
   z: BigInt
