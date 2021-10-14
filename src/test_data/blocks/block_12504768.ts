@@ -1,7 +1,7 @@
 import { BigInt, Bytes, ethereum } from "@graphprotocol/graph-ts";
-import { ADDRESSES, UNKNOWN_BYTES } from "./constants";
+import { ADDRESSES, UNKNOWN_BYTES } from "../constants";
 
-export let block12504768 = new ethereum.Block(
+export let block_12504768 = new ethereum.Block(
   // hash
   Bytes.fromHexString(
     "0x46c212912be05a090a9300cf87fd9434b8e8bbca15878d070ba83375a5dbaebd"

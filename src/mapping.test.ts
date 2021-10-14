@@ -8,7 +8,7 @@ import {
   handleImplementationAdded,
   handleRegisterContinuousMemoryPage,
 } from "./mapping";
-import { createRegisterContinousMemoryPageCall } from "./test_data/createRegisterContinousMemoryPageCall";
+import { registerContinuousMemoryPageCall_at_tx0xaeef } from "./test_data/calls/registerContinuousMemoryPageCall_at_tx0xaeef";
 
 function createImplementationAddedEvent(
   implementation: string,
@@ -61,8 +61,9 @@ export function runTests(): void {
   });
 
   test("add memory page", () => {
-    let registerContinousMemoryPageCall = createRegisterContinousMemoryPageCall();
-    handleRegisterContinuousMemoryPage(registerContinousMemoryPageCall);
+    handleRegisterContinuousMemoryPage(
+      registerContinuousMemoryPageCall_at_tx0xaeef
+    );
   });
 
   // test("data parsing", () => {

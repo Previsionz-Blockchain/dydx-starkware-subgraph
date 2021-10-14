@@ -1,7 +1,7 @@
 import { Bytes, BigInt, ethereum } from "@graphprotocol/graph-ts";
-import { ADDRESSES } from "./constants";
+import { ADDRESSES } from "../constants";
 
-export const tx0xaeef5ea449f5b37a2ee28179f5d782c0d708dac562c08cc1a3af113bf6807148 = new ethereum.Transaction(
+export const tx_0xaeef = new ethereum.Transaction(
   // public hash: Bytes,
   Bytes.fromHexString(
     "0xaeef5ea449f5b37a2ee28179f5d782c0d708dac562c08cc1a3af113bf6807148"
