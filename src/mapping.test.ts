@@ -66,7 +66,14 @@ export function runTests(): void {
     handleLogStateTransitionFact(logStateTransitionFact_0c3eb1);
   });
 
+  test("handleLogMemoryPagesHashes", () => {});
+
+  test("handleLogMemoryPageFactContinuous", () => {
+    // 3 facts
+  });
+
   test("handleRegisterContinuousMemoryPage", () => {
+    // 3 memory pages
     handleRegisterContinuousMemoryPage(
       registerContinuousMemoryPageCall_at_tx0xaeef
     );
