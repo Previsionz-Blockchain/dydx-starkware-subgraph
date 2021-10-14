@@ -18,6 +18,10 @@ ADDRESSES.set(
   "dYdX: Memory Page Fact Registry",
   Address.fromString("0xefbcce4659db72ec6897f46783303708cf9acef8")
 );
+ADDRESSES.set(
+  "dYdX: L2 Perpetual Smart Contract",
+  Address.fromString("0xd54f502e184b6b739d7d27a6410a67dc462d69c8")
+);
 
 export const UNKNOWN_BYTES = Bytes.fromHexString(
   "0x0000000000000000000000000000000000000000000000000000000000000000"

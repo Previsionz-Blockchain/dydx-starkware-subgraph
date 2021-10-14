@@ -6,9 +6,11 @@ import { ImplementationAdded } from "../generated/CallProxy/CallProxy";
 // import { batchOnChainData } from "./batchOnChainData";
 import {
   handleImplementationAdded,
+  handleLogStateTransitionFact,
   handleRegisterContinuousMemoryPage,
 } from "./mapping";
 import { registerContinuousMemoryPageCall_at_tx0xaeef } from "./test_data/calls/registerContinuousMemoryPageCall_at_tx0xaeef";
+import { logStateTransitionFact_0c3eb1 } from "./test_data/events/logStateTransitionFact_0x3eb1";
 
 function createImplementationAddedEvent(
   implementation: string,
@@ -51,7 +53,7 @@ function createImplementationAddedEvent(
 }
 
 export function runTests(): void {
-  test("test name", () => {
+  test("handleImplementationAdded", () => {
     let implementationAddedEvent = createImplementationAddedEvent(
       "0xcc5b2c75cbbd281b2fc4b58c7d5b080d023c92f2",
       "0x000000000000000000000000894c4a12548fb18eaa48cf34f9cd874fc08b7fc3",
@@ -60,7 +62,11 @@ export function runTests(): void {
     handleImplementationAdded(implementationAddedEvent);
   });
 
-  test("add memory page", () => {
+  test("handleLogStateTransitionFact", () => {
+    handleLogStateTransitionFact(logStateTransitionFact_0c3eb1);
+  });
+
+  test("handleRegisterContinuousMemoryPage", () => {
     handleRegisterContinuousMemoryPage(
       registerContinuousMemoryPageCall_at_tx0xaeef
     );
