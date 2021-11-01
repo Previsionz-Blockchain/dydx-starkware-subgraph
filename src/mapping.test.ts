@@ -6,10 +6,12 @@ import { ImplementationAdded } from "../generated/CallProxy/CallProxy";
 // import { batchOnChainData } from "./batchOnChainData";
 import {
   handleImplementationAdded,
+  handleLogMemoryPagesHashes,
   handleLogStateTransitionFact,
   handleRegisterContinuousMemoryPage,
 } from "./mapping";
 import { registerContinuousMemoryPageCall_at_tx0xaeef } from "./test_data/calls/registerContinuousMemoryPageCall_at_tx0xaeef";
+import { logStateMemoryPagesHashes_0x3eb1 } from "./test_data/events/logStateMemoryPagesHashes_0x3eb1";
 import { logStateTransitionFact_0c3eb1 } from "./test_data/events/logStateTransitionFact_0x3eb1";
 
 function createImplementationAddedEvent(
@@ -66,7 +68,9 @@ export function runTests(): void {
     handleLogStateTransitionFact(logStateTransitionFact_0c3eb1);
   });
 
-  test("handleLogMemoryPagesHashes", () => {});
+  test("handleLogMemoryPagesHashes", () => {
+    handleLogMemoryPagesHashes(logStateMemoryPagesHashes_0x3eb1);
+  });
 
   test("handleLogMemoryPageFactContinuous", () => {
     // 3 facts
@@ -78,7 +82,7 @@ export function runTests(): void {
       registerContinuousMemoryPageCall_at_tx0xaeef
     );
   });
-
+  
   // test("data parsing", () => {
   //   parseOnChainData(batchOnChainData);
   // });
