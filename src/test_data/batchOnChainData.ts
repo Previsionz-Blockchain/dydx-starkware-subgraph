@@ -1,6 +1,7 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 
-export let batchOnChainData: BigInt[] = [
+// https://etherscan.io/tx/0xaeef5ea449f5b37a2ee28179f5d782c0d708dac562c08cc1a3af113bf6807148
+export let batchOnChainData2: BigInt[] = [
   BigInt.fromString("8"),
   BigInt.fromString("13"),
   BigInt.fromString("255909362588701076462300859102920704"),
@@ -225,13 +226,17 @@ export let batchOnChainData: BigInt[] = [
   BigInt.fromString("9223372037578360764"),
   BigInt.fromString("463539986724008297878357474744991744"),
   BigInt.fromString("9223372037602306005"),
+
+  // TIMESTAMP STARTING HERE
   BigInt.fromString("1621958400"),
+  // NOW STARTING POSITIONSTATEUPDATES
   BigInt.fromString("4"),
   BigInt.fromString("0"),
   BigInt.fromString(
     "189650896096738455524324757354082212865485090609298675541377882835035420621"
   ),
   BigInt.fromString("9223372066089437685"),
+
   BigInt.fromString("1621958400"),
   BigInt.fromString("4"),
   BigInt.fromString("1"),
@@ -239,6 +244,7 @@ export let batchOnChainData: BigInt[] = [
     "1125223017496789296440499702271829852651459187302359339373570808969267635032"
   ),
   BigInt.fromString("9223372445762593077"),
+
   BigInt.fromString("1621947600"),
   BigInt.fromString("4"),
   BigInt.fromString("2"),
@@ -1241,6 +1247,9 @@ export let batchOnChainData: BigInt[] = [
   BigInt.fromString(
     "1583521356023866468164664413133378558115817240647825356699579285956145144130"
   ),
+];
+
+export let batchOnChainData3: BigInt[] = [
   BigInt.fromString("9223372037112412048"),
   BigInt.fromString("1621944000"),
   BigInt.fromString("6640420637486924426422558368095405328461362056654086400"),
@@ -1689,6 +1698,8 @@ export let batchOnChainData: BigInt[] = [
   BigInt.fromString("1621958400"),
   BigInt.fromString("4720694517739910420774010972744375740379025125817833472"),
 ];
+
+export let batchOnChainData1 = new Array<BigInt>();
 
 /*
 export let parsedOnChainData = {
