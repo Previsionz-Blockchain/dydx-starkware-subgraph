@@ -6,13 +6,33 @@ import { ImplementationAdded } from "../generated/CallProxy/CallProxy";
 // import { batchOnChainData } from "./batchOnChainData";
 import {
   handleImplementationAdded,
+  handleLogMemoryPageFactContinuous,
   handleLogMemoryPagesHashes,
   handleLogStateTransitionFact,
   handleRegisterContinuousMemoryPage,
 } from "./mapping";
 import { registerContinuousMemoryPageCall_at_tx0xaeef } from "./test_data/calls/registerContinuousMemoryPageCall_at_tx0xaeef";
+import { registerContinuousMemoryPageCall_at_tx0x7431 } from "./test_data/calls/registerContinuousMemoryPageCall_at_tx0x7431";
+import { registerContinuousMemoryPageCall_at_tx0x06fe } from "./test_data/calls/registerContinuousMemoryPageCall_at_tx0x06fe";
 import { logStateMemoryPagesHashes_0x3eb1 } from "./test_data/events/logStateMemoryPagesHashes_0x3eb1";
 import { logStateTransitionFact_0c3eb1 } from "./test_data/events/logStateTransitionFact_0x3eb1";
+import {
+  batchOnChainData1,
+  batchOnChainData2,
+  batchOnChainData3,
+} from "./test_data/batchOnChainData";
+import { batchOnChainDataTwo } from "./test_data/batchOnChainData2";
+import {
+  parseOnChainData,
+  dumpOnChainData,
+  createPositionStateUpdates,
+} from "./parseOnChainData";
+import { log } from "@graphprotocol/graph-ts";
+//import { blockData } from "./test_data/block1.txt";
+//import { blockData2 } from "./test_data/block2.txt";
+import { logMemoryPageFactContinuous_0x06fe } from "./test_data/events/logMemoryPageFactContinuous_0x06fe";
+import { logMemoryPageFactContinuous_0x7431 } from "./test_data/events/logMemoryPageFactContinuous_0x7431";
+import { logMemoryPageFactContinuous_0xaeef } from "./test_data/events/logMemoryPageFactContinuous_0xaeef";
 
 function createImplementationAddedEvent(
   implementation: string,
@@ -68,22 +88,43 @@ export function runTests(): void {
     handleLogStateTransitionFact(logStateTransitionFact_0c3eb1);
   });
 
+  test("handleRegisterContinuousMemoryPage", () => {
+    // 3 memory pages
+    handleRegisterContinuousMemoryPage(
+      registerContinuousMemoryPageCall_at_tx0x06fe
+    );
+    handleRegisterContinuousMemoryPage(
+      registerContinuousMemoryPageCall_at_tx0xaeef
+    );
+    handleRegisterContinuousMemoryPage(
+      registerContinuousMemoryPageCall_at_tx0x7431
+    );
+  });
+  test("handleLogMemoryPageFactContinuous", () => {
+    handleLogMemoryPageFactContinuous(logMemoryPageFactContinuous_0x06fe);
+    handleLogMemoryPageFactContinuous(logMemoryPageFactContinuous_0x7431);
+    handleLogMemoryPageFactContinuous(logMemoryPageFactContinuous_0xaeef);
+  });
   test("handleLogMemoryPagesHashes", () => {
     handleLogMemoryPagesHashes(logStateMemoryPagesHashes_0x3eb1);
   });
 
-  test("handleLogMemoryPageFactContinuous", () => {
-    // 3 facts
-  });
+  //   test("parseOnChainData", () => {
+  //     let parsedOnChainData = parseOnChainData(batchOnChainData2);
+  //     let positionStateUpdate = dumpOnChainData(parsedOnChainData.updates);
 
-  test("handleRegisterContinuousMemoryPage", () => {
-    // 3 memory pages
-    handleRegisterContinuousMemoryPage(
-      registerContinuousMemoryPageCall_at_tx0xaeef
-    );
-  });
-  
-  // test("data parsing", () => {
-  //   parseOnChainData(batchOnChainData);
-  // });
+  //     let values = parsedOnChainData.unparsedValues.concat(batchOnChainData3);
+  //     let parsedOnChainData2 = createPositionStateUpdates(values);
+  //     let positionUpdate = dumpOnChainData(parsedOnChainData2);
+
+  //     for (let i = 0; i < values.length; i++) {
+  //       log.debug("LEFTOVER #{}={}", [i.toString(), values[i].toHexString()]);
+  //     }
+
+  //     // let lower = BigInt.fromI32(0).minus(BigInt.fromI32(2).pow(63));
+  //   });
+
+  //   test("data parsing", () => {
+  //     parseOnChainData(batchOnChainData);
+  //   });
 }
