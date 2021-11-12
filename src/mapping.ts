@@ -160,8 +160,14 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
   entity.finalize = event.params.finalize;
   entity.type = "ADDED";
   entity.save();
-
-  GpsStatementVerifier.create(event.params.implementation);
+  
+  let addressString = event.params.initializer.toHexString()
+  addressString = addressString.substring(addressString.length-42)
+  // TODO: This is kinda ugly. At least do comparison @byte lvl or RegExp (if as supports it)?
+  while (addressString.startsWith("0")){
+    addressString = addressString.substring(1)
+  }
+  GpsStatementVerifier.create(Address.fromString(addressString));
 }
 
 export function handleUpgraded(event: Upgraded): void {
