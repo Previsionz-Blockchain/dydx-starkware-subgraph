@@ -16,20 +16,6 @@ import { registerContinuousMemoryPageCall_at_tx0x7431 } from "./test_data/calls/
 import { registerContinuousMemoryPageCall_at_tx0x06fe } from "./test_data/calls/registerContinuousMemoryPageCall_at_tx0x06fe";
 import { logStateMemoryPagesHashes_0x3eb1 } from "./test_data/events/logStateMemoryPagesHashes_0x3eb1";
 import { logStateTransitionFact_0c3eb1 } from "./test_data/events/logStateTransitionFact_0x3eb1";
-import {
-  batchOnChainData1,
-  batchOnChainData2,
-  batchOnChainData3,
-} from "./test_data/batchOnChainData";
-import { batchOnChainDataTwo } from "./test_data/batchOnChainData2";
-import {
-  parseOnChainData,
-  dumpOnChainData,
-  createPositionStateUpdates,
-} from "./parseOnChainData";
-import { log } from "@graphprotocol/graph-ts";
-//import { blockData } from "./test_data/block1.txt";
-//import { blockData2 } from "./test_data/block2.txt";
 import { logMemoryPageFactContinuous_0x06fe } from "./test_data/events/logMemoryPageFactContinuous_0x06fe";
 import { logMemoryPageFactContinuous_0x7431 } from "./test_data/events/logMemoryPageFactContinuous_0x7431";
 import { logMemoryPageFactContinuous_0xaeef } from "./test_data/events/logMemoryPageFactContinuous_0xaeef";
