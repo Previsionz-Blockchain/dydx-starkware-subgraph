@@ -4,11 +4,10 @@ import {
   Bytes,
   ByteArray,
   BigDecimal,
+  log,
 } from "@graphprotocol/graph-ts";
-import { test } from "matchstick-as/assembly/index";
-import { log } from "matchstick-as/assembly/log";
 
-import { batchOnChainData } from "./test_data/batchOnChainData";
+
 
 let FUNDING_INDEX_LOWER_BOUND: BigInt = BigInt.fromI32(2)
   .pow(63)
@@ -47,12 +46,25 @@ class FundingIndicesState {
       - asset_balance_updates: information regarding the assets that changed in the position
       (contains asset_id and balance)
   */
-class PositionStateUpdate {
+export class PositionStateUpdate {
   positionId: BigInt;
   publicKey: BigInt;
   collateralBalance: BigInt;
   fundingTimestamp: BigInt;
   assetBalanceUpdates: TypedMap<BigInt, BigInt>;
+  constructor(
+    positionId: BigInt,
+    publicKey: BigInt,
+    collateralBalance: BigInt,
+    fundingTimestamp: BigInt,
+    assetBalanceUpdates: TypedMap<BigInt, BigInt>
+  ) {
+    this.positionId = positionId;
+    this.publicKey = publicKey;
+    this.collateralBalance = collateralBalance;
+    this.fundingTimestamp = fundingTimestamp;
+    this.assetBalanceUpdates = assetBalanceUpdates;
+  }
 }
 
 /*
@@ -61,6 +73,17 @@ class PositionStateUpdate {
 class PerpetualOnChainData {
   fundingIndicesMapping: TypedMap<i32, FundingIndicesState>;
   updates: PositionStateUpdate[];
+  unparsedValues: BigInt[];
+
+  constructor(
+    fundingIndicesMapping: TypedMap<i32, FundingIndicesState>,
+    updates: PositionStateUpdate[],
+    unparsedValues: BigInt[]
+  ) {
+    this.fundingIndicesMapping = fundingIndicesMapping;
+    this.updates = updates;
+    this.unparsedValues = unparsedValues;
+  }
 }
 
 class VaultAsset {
@@ -82,6 +105,10 @@ class VaultAsset {
 class Vault {
   starkKey: BigInt;
   assets: TypedMap<String, VaultAsset>;
+  constructor(starkKey: BigInt, assets: TypedMap<String, VaultAsset>) {
+    this.starkKey = starkKey;
+    this.assets = assets;
+  }
 }
 
 function getAssetIdsAndBalances(
@@ -91,8 +118,8 @@ function getAssetIdsAndBalances(
 
   for (let i = 0; i < serializedAssets.length; i++) {
     let assetSerialized = serializedAssets[i];
-    let assetId = assetSerialized.subarray(8) as BigInt;
-    let biasedBalance = assetSerialized.subarray(0, 16) as BigInt;
+    let assetId = changetype<BigInt>(assetSerialized.subarray(8));
+    let biasedBalance = changetype<BigInt>(assetSerialized.subarray(0, 16));
 
     log.debug(
       "assetSerialized: " +
@@ -114,17 +141,16 @@ function getAssetIdsAndBalances(
 }
 
 function parsePositionStateUpdate(data: BigInt[]): PositionStateUpdate {
-  let positionStateUpdate = new PositionStateUpdate();
-  positionStateUpdate.positionId = data[0];
-  positionStateUpdate.publicKey = data[1];
-  let biasedBalance = data[2];
-  positionStateUpdate.collateralBalance = biasedBalance.plus(
-    FUNDING_INDEX_LOWER_BOUND
-  );
-  positionStateUpdate.fundingTimestamp = data[3];
-
-  let assetSerialization = data.slice(4);
-  positionStateUpdate.assetBalanceUpdates = getAssetIdsAndBalances(
+  let positionId = data[0];
+  let publicKey = data[1];
+  let biasedBalance = data[2].plus(FUNDING_INDEX_LOWER_BOUND);
+  let fundingTimestamp = data[3];
+  let assetSerialization = getAssetIdsAndBalances(data.slice(4));
+  let positionStateUpdate = new PositionStateUpdate(
+    positionId,
+    publicKey,
+    biasedBalance,
+    fundingTimestamp,
     assetSerialization
   );
 
@@ -145,11 +171,10 @@ function parsePositionStateUpdate(data: BigInt[]): PositionStateUpdate {
   return positionStateUpdate;
 }
 
-function parseOnChainData(_values: BigInt[]): PerpetualOnChainData {
+export function parseOnChainData(_values: BigInt[]): PerpetualOnChainData {
   let fundingIndicesTableSize = _values[0].toI32();
   let values = _values.slice(1);
   let fundingIndicesMapping = new TypedMap<i32, FundingIndicesState>();
-  let positionStateUpdates = new Array<PositionStateUpdate>();
 
   for (let i = 0; i < fundingIndicesTableSize; i++) {
     let numberOfFundingIndices = values[0].toI32();
@@ -180,19 +205,38 @@ function parseOnChainData(_values: BigInt[]): PerpetualOnChainData {
     values = values.slice(2 * numberOfFundingIndices + 1 + 1);
   }
 
-  log.debug(BigInt.fromI32(values.length).toString(), []);
+  let positionStateUpdates = createPositionStateUpdates(values);
 
+  return new PerpetualOnChainData(
+    fundingIndicesMapping,
+    positionStateUpdates,
+    values
+  );
+}
+
+/**
+ *
+ * @param values This function will modify the array! There might be leftover values at the end of execution
+ * @returns
+ */
+export function createPositionStateUpdates(
+  values: BigInt[]
+): PositionStateUpdate[] {
+  let positionStateUpdates = new Array<PositionStateUpdate>();
   while (values.length > 0) {
-    let currentPositionStateValues = values[0];
+    let currentPositionStateValues = values.shift();
 
-    positionStateUpdates.push(
-      parsePositionStateUpdate(
-        values.slice(
-          1,
-          currentPositionStateValues.plus(BigInt.fromI32(1)).toI32()
-        )
-      )
-    );
+    let spliceLength = currentPositionStateValues.toI32();
+    if (values.length < spliceLength) {
+      log.debug(
+        "Missing values {} < {}: parsePositionStateUpdate will continue with next tx",
+        [values.length.toString(), spliceLength.toString()]
+      );
+      values.unshift(currentPositionStateValues);
+      break;
+    }
+    let positionElements = values.splice(0, spliceLength);
+    positionStateUpdates.push(parsePositionStateUpdate(positionElements));
 
     log.debug(
       "add positionStateUpdate: " +
@@ -200,26 +244,18 @@ function parseOnChainData(_values: BigInt[]): PerpetualOnChainData {
         " " +
         BigInt.fromI32(values.length).toString(),
       []
-    ),
-      (values = values.slice(
-        currentPositionStateValues.plus(BigInt.fromI32(1)).toI32()
-      ));
+    );
   }
-
-  let onChainData = new PerpetualOnChainData();
-  onChainData.fundingIndicesMapping = fundingIndicesMapping;
-  onChainData.updates = positionStateUpdates;
-
-  return onChainData;
+  return positionStateUpdates;
 }
 
-function dumpOnChainData(
-  onChainData: PerpetualOnChainData
+export function dumpOnChainData(
+  positionStateUpdates: PositionStateUpdate[]
 ): TypedMap<String, Vault> {
   let result = new TypedMap<String, Vault>();
 
-  for (let i = 0; i < onChainData.updates.length; i++) {
-    let update = onChainData.updates[i];
+  for (let i = 0; i < positionStateUpdates.length; i++) {
+    let update = positionStateUpdates[i];
     let vault = dumpPositionUpdate(update);
     result.set(update.positionId.toString(), vault);
   }
@@ -228,9 +264,9 @@ function dumpOnChainData(
 }
 
 function dumpPositionUpdate(update: PositionStateUpdate): Vault {
-  let vault = new Vault();
-  vault.starkKey = update.publicKey;
-  vault.assets = dumpPositionUpdateAssets(update);
+  let starkKey = update.publicKey;
+  let assets = dumpPositionUpdateAssets(update);
+  let vault = new Vault(starkKey, assets);
   return vault;
 }
 
@@ -253,9 +289,16 @@ function dumpPositionUpdateAssets(
     let assetId = entry.key;
     let amount = entry.value.toBigDecimal();
 
-    let assetInfo = ByteArray.fromHexString(assetId.toHexString()).toString();
-    let assetName = assetInfo.split("-")[0];
-    let resolution = BigInt.fromString(assetInfo.split("-")[1]);
+    let assetInfo = assetId.toHexString();
+    //   Graph fails to parse if assetId = 0x0 (e.g. Block 12115229)
+    let assetName = "N/A";
+    let resolution = new BigInt(0);
+    if (assetInfo != "0x0") {
+      assetInfo = ByteArray.fromHexString(assetId.toHexString()).toString();
+      let assetInfoSplit = assetInfo.split("-");
+      assetName = assetInfoSplit[0];
+      resolution = BigInt.fromString(assetInfoSplit[1]);
+    }
     let additionalAttributes = new TypedMap<String, BigInt>();
 
     additionalAttributes.set("cached_funding_index", update.fundingTimestamp);
@@ -293,13 +336,13 @@ function dumpPositionUpdateAssets(
   return assetsDict;
 }
 
-export function runTests(): void {
-  test("parseOnChainData", () => {
-    let parsedOnChainData = parseOnChainData(batchOnChainData);
-    let positionStateUpdate = dumpOnChainData(parsedOnChainData);
+// export function runTests(): void {
+//   test("parseOnChainData", () => {
+//     let parsedOnChainData = parseOnChainData(batchOnChainData);
+//     let positionStateUpdate = dumpOnChainData(parsedOnChainData);
 
-    // let lower = BigInt.fromI32(0).minus(BigInt.fromI32(2).pow(63));
+//     // let lower = BigInt.fromI32(0).minus(BigInt.fromI32(2).pow(63));
 
-    log.info("End!" + FUNDING_INDEX_LOWER_BOUND.toString(), []);
-  });
-}
+//     log.info("End!" + FUNDING_INDEX_LOWER_BOUND.toString(), []);
+//   });
+// }

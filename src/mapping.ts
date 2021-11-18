@@ -1,4 +1,4 @@
-import { Address, log, store } from "@graphprotocol/graph-ts";
+import { Address, log, BigInt, BigDecimal } from "@graphprotocol/graph-ts";
 
 import { LogStateTransitionFact } from "../generated/StarkPerpetual/StarkPerpetual";
 import {
@@ -17,10 +17,15 @@ import {
   MemoryPageHash,
   ProxyEvent,
   MemoryPage,
+  Vault,
+  Token,
+  TokenBalance,
+  Transaction,
 } from "../generated/schema";
 import { GpsStatementVerifier } from "../generated/templates";
+import { parseOnChainData, dumpOnChainData } from "./parseOnChainData";
 
-export { runTests } from "./mapping.test";
+// export { runTests } from "./mapping.test";
 
 function hexZeroPad(hexstring: string, length: i32 = 32): string {
   return hexstring.substr(0, 2) + hexstring.substr(2).padStart(length * 2, "0");
@@ -56,10 +61,16 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
   let id =
     event.transaction.hash.toHexString() + ":" + event.logIndex.toHexString();
 
-  log.info("handleLogMemoryPagesHashes - factHash: {}, pagesHashes: {}", [
+  log.info("handleLogMemoryPagesHashes - factHash: {}", [
     factHash.toHexString(),
-    pagesHashes.toString(),
   ]);
+
+  for (let i = 0; i < pagesHashes.length; i++) {
+    log.info("handleLogMemoryPagesHashes - pagesHashes #{}: {}", [
+      i.toString(),
+      pagesHashes[i].toHexString(),
+    ]);
+  }
 
   let entity = new MemoryPageHash(id);
   entity.timestamp = event.block.timestamp;
@@ -73,12 +84,64 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
   entity.stateTransitionFact = event.params.factHash.toHexString();
 
   let memoryPageFacts = new Array<string>();
+  let values = new Array<BigInt>();
   for (let i = 0; i < pagesHashes.length; i++) {
     memoryPageFacts.push(pagesHashes[i].toHexString());
+    if (i == 0) continue;
+    let memoryPageFact = MemoryPageFact.load(pagesHashes[i].toHexString())!;
+    let memoryPage = MemoryPage.load(
+      memoryPageFact.transactionHash.toHexString()
+    )!;
+    values = values.concat(memoryPage.values);
+  }
+
+  let parsedData = parseOnChainData(values);
+  let dumpedData = dumpOnChainData(parsedData.updates).entries;
+  for (let i = 0; i < dumpedData.length; i++) {
+    let internVault = dumpedData[i].value;
+    let vaultID = internVault.starkKey.toHexString();
+    let vault = Vault.load(vaultID);
+    if (!vault) {
+      vault = new Vault(vaultID);
+    }
+
+    let assetsEntries = internVault.assets.entries;
+
+    for (let x = 0; x < assetsEntries.length; x++) {
+      let internAsset = assetsEntries[x].value;
+      let tokenID = assetsEntries[x].key.toString();
+      let token = Token.load(tokenID);
+      if (!token) {
+        token = new Token(tokenID);
+        token.assetType = internAsset.assetType;
+        token.ticker = assetsEntries[x].key.toString();
+        token.save();
+      }
+      //ID Okay?
+      let transactionID = id + ":" + vaultID + ":" + tokenID;
+      let transaction = new Transaction(transactionID);
+      transaction.amount = internAsset.amount;
+      transaction.vault = vaultID;
+      transaction.token = tokenID;
+
+      let tokenBalanceID = vaultID + ":" + tokenID;
+      let tokenBalance = TokenBalance.load(tokenBalanceID);
+      if (!tokenBalance) {
+        tokenBalance = new TokenBalance(tokenBalanceID);
+        tokenBalance.vault = vaultID;
+        tokenBalance.token = tokenID;
+        tokenBalance.balance = new BigDecimal(new BigInt(0));
+      }
+
+      tokenBalance.balance = tokenBalance.balance.plus(internAsset.amount);
+
+      transaction.save();
+      tokenBalance.save();
+    }
+    vault.save();
   }
 
   entity.memoryPageFacts = memoryPageFacts;
-
   entity.save();
 }
 
@@ -127,7 +190,6 @@ export function handleRegisterContinuousMemoryPage(
   memoryPage.blockHash = call.block.hash;
   memoryPage.timestamp = call.block.timestamp;
   memoryPage.transactionHash = call.transaction.hash;
-
   memoryPage.startAddr = call.inputs.startAddr;
   memoryPage.values = call.inputs.values;
   memoryPage.z = call.inputs.z;
@@ -160,12 +222,12 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
   entity.finalize = event.params.finalize;
   entity.type = "ADDED";
   entity.save();
-  
-  let addressString = event.params.initializer.toHexString()
-  addressString = addressString.substring(addressString.length-42)
+
+  let addressString = event.params.initializer.toHexString();
+  addressString = addressString.substring(addressString.length - 42);
   // TODO: This is kinda ugly. At least do comparison @byte lvl or RegExp (if as supports it)?
-  while (addressString.startsWith("0")){
-    addressString = addressString.substring(1)
+  while (addressString.startsWith("0")) {
+    addressString = addressString.substring(1);
   }
   GpsStatementVerifier.create(Address.fromString(addressString));
 }

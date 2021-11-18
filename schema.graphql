@@ -33,7 +33,7 @@ type MemoryPageHash implements Event @entity {
   factHash: Bytes!
   pagesHashes: [Bytes!]!
 
-  stateTransitionFact: StateTransitionFact
+  stateTransitionFact: StateTransitionFact!
   memoryPageFacts: [MemoryPageFact!]!
 }
 
@@ -84,4 +84,34 @@ type ProxyEvent implements Event @entity {
   implementation: Bytes!
   initializer: Bytes
   finalize: Boolean
+}
+
+type Vault @entity {
+  id: ID!
+  starkKey: Bytes!
+  balanceUSD: BigDecimal
+  #tokens: [Token!]!
+  balances: [TokenBalance!]! @derivedFrom(field: "vault")
+  transactions: [Transaction!]! @derivedFrom(field: "vault")
+}
+
+type Token @entity {
+  id: ID!
+  ticker: String!
+  assetType: String!
+}
+
+type TokenBalance @entity {
+  id: ID!
+  vault: Vault!
+  token: Token!
+  balance: BigDecimal!
+}
+
+type Transaction @entity {
+  id: ID!
+  vault: Vault!
+  token: Token!
+  amount: BigDecimal!
+  cachedFundingIndex: BigInt
 }
