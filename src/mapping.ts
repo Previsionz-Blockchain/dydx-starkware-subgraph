@@ -58,7 +58,7 @@ export function handleLogStateTransitionFact(
 export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
   let factHash = event.params.factHash;
   let pagesHashes = event.params.pagesHashes;
-  let id =
+  let memoryPageHashId =
     event.transaction.hash.toHexString() + ":" + event.logIndex.toHexString();
 
   log.info("handleLogMemoryPagesHashes - factHash: {}", [
@@ -72,7 +72,7 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
     ]);
   }
 
-  let entity = new MemoryPageHash(id);
+  let entity = new MemoryPageHash(memoryPageHashId);
   entity.timestamp = event.block.timestamp;
   entity.blockNumber = event.block.number;
   entity.blockHash = event.block.hash;
@@ -89,6 +89,7 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
     memoryPageFacts.push(pagesHashes[i].toHexString());
     if (i == 0) continue;
     let memoryPageFact = MemoryPageFact.load(pagesHashes[i].toHexString())!;
+
     let memoryPage = MemoryPage.load(
       memoryPageFact.transactionHash.toHexString()
     )!;
@@ -103,8 +104,8 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
     let vault = Vault.load(vaultID);
     if (!vault) {
       vault = new Vault(vaultID);
+      vault.starkKey = internVault.starkKey;
     }
-
     let assetsEntries = internVault.assets.entries;
 
     for (let x = 0; x < assetsEntries.length; x++) {
@@ -118,11 +119,15 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
         token.save();
       }
       //ID Okay?
-      let transactionID = id + ":" + vaultID + ":" + tokenID;
+      let transactionID = memoryPageHashId + ":" + vaultID + ":" + tokenID;
       let transaction = new Transaction(transactionID);
       transaction.amount = internAsset.amount;
       transaction.vault = vaultID;
       transaction.token = tokenID;
+      transaction.cachedFundingIndex = internAsset.additionalAttributes.get(
+        "cached_funding_index"
+      );
+      transaction.memoryPageHash = memoryPageHashId;
 
       let tokenBalanceID = vaultID + ":" + tokenID;
       let tokenBalance = TokenBalance.load(tokenBalanceID);
@@ -225,10 +230,11 @@ export function handleImplementationAdded(event: ImplementationAdded): void {
 
   let addressString = event.params.initializer.toHexString();
   addressString = addressString.substring(addressString.length - 42);
-  // TODO: This is kinda ugly. At least do comparison @byte lvl or RegExp (if as supports it)?
-  while (addressString.startsWith("0")) {
-    addressString = addressString.substring(1);
+  let charCntr = 0;
+  while (addressString[charCntr] == "0") {
+    charCntr++;
   }
+  addressString = addressString.substring(charCntr);
   GpsStatementVerifier.create(Address.fromString(addressString));
 }
 
