@@ -18,9 +18,8 @@ import {
   ProxyEvent,
   MemoryPage,
   Vault,
-  Token,
-  TokenBalance,
-  Transaction,
+  Asset,
+  VaultHistory,
 } from "../generated/schema";
 import { GpsStatementVerifier } from "../generated/templates";
 import { parseOnChainData, dumpOnChainData } from "./parseOnChainData";
@@ -56,6 +55,7 @@ export function handleLogStateTransitionFact(
  * In python: memory_page_facts_logs ?
  */
 export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
+  let blockHash = event.block.hash.toHexString();
   let factHash = event.params.factHash;
   let pagesHashes = event.params.pagesHashes;
   let memoryPageHashId =
@@ -99,51 +99,40 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
   let parsedData = parseOnChainData(values);
   let dumpedData = dumpOnChainData(parsedData.updates).entries;
   for (let i = 0; i < dumpedData.length; i++) {
+    let positionId = dumpedData[i].key;
     let internVault = dumpedData[i].value;
-    let vaultID = internVault.starkKey.toHexString();
-    let vault = Vault.load(vaultID);
-    if (!vault) {
-      vault = new Vault(vaultID);
-      vault.starkKey = internVault.starkKey;
-    }
-    let assetsEntries = internVault.assets.entries;
 
+    let vaultHistoryId = positionId.toString();
+    let vaultHistory = VaultHistory.load(vaultHistoryId);
+    if (!vaultHistory) {
+      vaultHistory = new VaultHistory(vaultHistoryId);
+    }
+
+    let blockHashVaultId = vaultHistoryId + ":" + blockHash;
+    let vault = new Vault(blockHashVaultId);
+    vault.positionID = BigInt.fromString(positionId.toString());
+    vault.starkKey = internVault.starkKey.toHexString();
+    vault.memoryPageHash = memoryPageHashId;
+
+    let assetsEntries = internVault.assets.entries;
     for (let x = 0; x < assetsEntries.length; x++) {
+      let ticker = assetsEntries[x].key.toString();
       let internAsset = assetsEntries[x].value;
-      let tokenID = assetsEntries[x].key.toString();
-      let token = Token.load(tokenID);
-      if (!token) {
-        token = new Token(tokenID);
-        token.assetType = internAsset.assetType;
-        token.ticker = assetsEntries[x].key.toString();
-        token.save();
-      }
-      //ID Okay?
-      let transactionID = memoryPageHashId + ":" + vaultID + ":" + tokenID;
-      let transaction = new Transaction(transactionID);
-      transaction.amount = internAsset.amount;
-      transaction.vault = vaultID;
-      transaction.token = tokenID;
-      transaction.cachedFundingIndex = internAsset.additionalAttributes.get(
+      let assetId = blockHashVaultId + ":" + ticker;
+      let asset = new Asset(assetId);
+      asset.amount = internAsset.amount;
+      asset.assetType = internAsset.assetType;
+      asset.cachedFundingIndex = internAsset.additionalAttributes.get(
         "cached_funding_index"
       );
-      transaction.memoryPageHash = memoryPageHashId;
-
-      let tokenBalanceID = vaultID + ":" + tokenID;
-      let tokenBalance = TokenBalance.load(tokenBalanceID);
-      if (!tokenBalance) {
-        tokenBalance = new TokenBalance(tokenBalanceID);
-        tokenBalance.vault = vaultID;
-        tokenBalance.token = tokenID;
-        tokenBalance.balance = new BigDecimal(new BigInt(0));
-      }
-
-      tokenBalance.balance = tokenBalance.balance.plus(internAsset.amount);
-
-      transaction.save();
-      tokenBalance.save();
+      asset.vault = blockHashVaultId;
+      asset.ticker = ticker;
+      asset.save();
     }
+    vault.vaultHistory = vaultHistoryId;
     vault.save();
+    vaultHistory.latestVault = blockHashVaultId;
+    vaultHistory.save();
   }
 
   entity.memoryPageFacts = memoryPageFacts;
