@@ -35,6 +35,7 @@ type MemoryPageHash implements Event @entity {
 
   stateTransitionFact: StateTransitionFact!
   memoryPageFacts: [MemoryPageFact!]!
+  vaults: [Vault!]! @derivedFrom(field: "memoryPageHash")
 }
 
 type MemoryPageFact implements Event @entity {
@@ -86,32 +87,26 @@ type ProxyEvent implements Event @entity {
   finalize: Boolean
 }
 
+type VaultHistory @entity {
+  id: ID!
+  latestVault: Vault!
+  historicalVaults: [Vault!]! @derivedFrom(field: "vaultHistory")
+}
+
 type Vault @entity {
   id: ID!
-  starkKey: Bytes!
-  balanceUSD: BigDecimal
-  #tokens: [Token!]!
-  balances: [TokenBalance!]! @derivedFrom(field: "vault")
-  transactions: [Transaction!]! @derivedFrom(field: "vault")
+  positionID: BigInt!
+  starkKey: String!
+  assets: [Asset!]! @derivedFrom(field: "vault")
+  memoryPageHash: MemoryPageHash!
+  vaultHistory: VaultHistory!
 }
 
-type Token @entity {
+type Asset @entity {
   id: ID!
+  vault: Vault!
   ticker: String!
   assetType: String!
-}
-
-type TokenBalance @entity {
-  id: ID!
-  vault: Vault!
-  token: Token!
-  balance: BigDecimal!
-}
-
-type Transaction @entity {
-  id: ID!
-  vault: Vault!
-  token: Token!
   amount: BigDecimal!
   cachedFundingIndex: BigInt
 }
