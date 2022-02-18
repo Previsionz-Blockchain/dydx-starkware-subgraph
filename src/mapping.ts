@@ -163,11 +163,14 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
     vaultHistory.save();
   }
 
-  for (let [key, value] of assetvalue) {
-    let dailyVolumeAssetID = dayID.toString().concat('-').concat(key.toString())
+  let assetvalueKeys = assetvalue.keys()
+  for (let i = 0; i < assetvalueKeys.length; i++){
+    let key = assetvalueKeys[i]
+    let value = assetvalue.get(key)
+    let dailyVolumeAssetID = dayID.toString().concat('-').concat(key)
     let dailyVolumeAssets = dailyVolumeAsset.load(dailyVolumeAssetID)
     if(!dailyVolumeAssets){
-      let dailyVolumeAssets = new dailyVolumeAsset(dailyVolumeAssetID)
+      dailyVolumeAssets = new dailyVolumeAsset(dailyVolumeAssetID)
       dailyVolumeAssets.asset = key.toString()
       dailyVolumeAssets.amount = value
       dailyVolumeAssets.day = dayID
@@ -177,9 +180,7 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
       
     }
     dailyVolumeAssets.save()
-    
   }
-
   dailyVolumes.save()
   
   entity.memoryPageFacts = memoryPageFacts;
