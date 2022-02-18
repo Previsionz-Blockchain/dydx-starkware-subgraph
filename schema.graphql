@@ -112,17 +112,30 @@ type Asset @entity {
   cachedFundingIndex: BigInt
 }
 
-type dailyVolumeAsset @entity {
-  id : ID!  #timestamp + ticker
+#type dailyDifferenceAsset @entity {
+  #id : ID!  #timestamp + ticker
+  #asset: String!
+  #amount: BigDecimal!
+ # day: dailyVolume!
+#}
+
+type dailyVolumeAsset @entity{
+  id : ID! 
   asset: String!
   amount: BigDecimal!
-  day: dailyVolume!
+  day: dailyVolume! 
+  #amountTrades: BigInt!
+  #dailyDifferenceAsset: BigDecimal!
 }
 
 type dailyVolume @entity {
   id: ID! #timestamp/8400
+  #differenceAssets: [dailyDifferenceAsset!]! @derivedFrom(field: "day")
   volumeAssets: [dailyVolumeAsset!]! @derivedFrom(field: "day")
+  timestamp: BigInt!
+
 }
+
 type User @entity{
   id: ID!
   starkKey: String!

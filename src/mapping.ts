@@ -1,6 +1,6 @@
 import { Address, log, BigInt, BigDecimal, Bytes } from "@graphprotocol/graph-ts";
 
-import { LogStateTransitionFact,RegisterAndDepositERC20Call, RegisterUserCall } from "../generated/StarkPerpetual/StarkPerpetual";
+import { LogStateTransitionFact, RegisterAndDepositERC20Call, RegisterUserCall } from "../generated/StarkPerpetual/StarkPerpetual";
 import {
   LogMemoryPageFactContinuous,
   RegisterContinuousMemoryPageCall,
@@ -21,8 +21,9 @@ import {
   Asset,
   VaultHistory,
   dailyVolume,
-  dailyVolumeAsset,
-  User
+  //dailyDifferenceAsset,
+  User,
+  dailyVolumeAsset
 } from "../generated/schema";
 import { GpsStatementVerifier } from "../generated/templates";
 import { parseOnChainData, dumpOnChainData } from "./parseOnChainData";
@@ -140,13 +141,29 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
       asset.amount = internAsset.amount;
       asset.assetType = internAsset.assetType;
       
+      let zero = new BigInt(0)
+      let zeroDec = new BigDecimal(zero)
+
+      let minusOne = new BigInt(-1)
+      let minusOneDec = new BigDecimal(minusOne)
       //storing values in mapping
       if(assetvalue.has(ticker) == false){
-        assetvalue.set(ticker, internAsset.amount)
+        if(internAsset.amount.lt(zeroDec)){
+          let posAmount = internAsset.amount.times(minusOneDec)
+          assetvalue.set(ticker, posAmount)
+        }
+        else{assetvalue.set(ticker, internAsset.amount)}
       }
       else{
         let keysvalue = assetvalue.get(ticker)
-        keysvalue = keysvalue.plus(internAsset.amount)
+        if(internAsset.amount.lt(zeroDec)){
+          let posAmount = internAsset.amount.times(minusOneDec)
+          keysvalue = keysvalue.plus(posAmount)
+          
+        }
+        else{
+          keysvalue = keysvalue.plus(internAsset.amount)
+        }
         assetvalue.set(ticker, keysvalue)
       }
 
