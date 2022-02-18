@@ -96,6 +96,7 @@ type VaultHistory @entity {
 type Vault @entity {
   id: ID!
   positionID: BigInt!
+  user: User!
   starkKey: String!
   assets: [Asset!]! @derivedFrom(field: "vault")
   memoryPageHash: MemoryPageHash!
@@ -121,4 +122,14 @@ type dailyVolumeAsset @entity {
 type dailyVolume @entity {
   id: ID! #timestamp/8400
   volumeAssets: [dailyVolumeAsset!]! @derivedFrom(field: "day")
+}
+type User @entity{
+  id: ID!
+  starkKey: String!
+  blockNumber: BigInt!
+  blockHash: Bytes!
+  transactionHash: Bytes!
+  timestamp: BigInt!
+  ethKey: Bytes!
+  vaults: [Vault!]! @derivedFrom(field: "user")
 }

@@ -1,6 +1,6 @@
-import { Address, log, BigInt, BigDecimal } from "@graphprotocol/graph-ts";
+import { Address, log, BigInt, BigDecimal, Bytes } from "@graphprotocol/graph-ts";
 
-import { LogStateTransitionFact } from "../generated/StarkPerpetual/StarkPerpetual";
+import { LogStateTransitionFact,RegisterAndDepositERC20Call, RegisterUserCall } from "../generated/StarkPerpetual/StarkPerpetual";
 import {
   LogMemoryPageFactContinuous,
   RegisterContinuousMemoryPageCall,
@@ -21,7 +21,8 @@ import {
   Asset,
   VaultHistory,
   dailyVolume,
-  dailyVolumeAsset
+  dailyVolumeAsset,
+  User
 } from "../generated/schema";
 import { GpsStatementVerifier } from "../generated/templates";
 import { parseOnChainData, dumpOnChainData } from "./parseOnChainData";
@@ -127,6 +128,7 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
     let vault = new Vault(blockHashVaultId);
     vault.positionID = BigInt.fromString(positionId.toString());
     vault.starkKey = internVault.starkKey.toHexString();
+    vault.user = internVault.starkKey.toHexString();
     vault.memoryPageHash = memoryPageHashId;
 
     let assetsEntries = internVault.assets.entries;
@@ -289,4 +291,32 @@ export function handleUpgraded(event: Upgraded): void {
   entity.implementation = event.params.implementation;
   entity.type = "UPGRADED";
   entity.save();
+}
+
+export function handleRegisterUser(call: RegisterUserCall): void{
+  let starkKey = call.inputs.starkKey.toHexString()
+
+  let entity = new User(starkKey)
+  entity.blockHash = call.block.hash
+  entity.blockNumber = call.block.number
+  entity.timestamp = call.block.timestamp
+  entity.transactionHash = call.transaction.hash
+
+  entity.ethKey = call.inputs.ethKey
+  entity.starkKey = starkKey
+  entity.save()
+}
+
+export function handleRegisterAndDeposit(call: RegisterAndDepositERC20Call): void{
+  let starkKey = call.inputs.starkKey.toHexString()
+
+  let entity = new User(starkKey)
+  entity.blockHash = call.block.hash
+  entity.blockNumber = call.block.number
+  entity.timestamp = call.block.timestamp
+  entity.transactionHash = call.transaction.hash
+
+  entity.ethKey = call.inputs.ethKey
+  entity.starkKey = starkKey
+  entity.save()
 }

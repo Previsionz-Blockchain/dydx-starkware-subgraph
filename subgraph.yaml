@@ -22,6 +22,11 @@ dataSources:
       eventHandlers:
         - event: LogStateTransitionFact(bytes32)
           handler: handleLogStateTransitionFact
+      callHandlers:
+        - function: registerAndDepositERC20(address,uint256,bytes,uint256,uint256,uint256)
+          handler: handleRegisterAndDeposit
+        - function: registerUser(address,uint256,bytes)
+          handler: handleRegisterUser
       file: ./src/mapping.ts
   - kind: ethereum/contract
     name: MemoryPageFactRegistry
