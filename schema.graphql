@@ -110,3 +110,15 @@ type Asset @entity {
   amount: BigDecimal!
   cachedFundingIndex: BigInt
 }
+
+type dailyVolumeAsset @entity {
+  id : ID!  #timestamp + ticker
+  asset: String!
+  amount: BigDecimal!
+  day: dailyVolume!
+}
+
+type dailyVolume @entity {
+  id: ID! #timestamp/8400
+  volumeAssets: [dailyVolumeAsset!]! @derivedFrom(field: "day")
+}

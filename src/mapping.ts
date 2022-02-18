@@ -20,11 +20,13 @@ import {
   Vault,
   Asset,
   VaultHistory,
+  dailyVolume,
+  dailyVolumeAsset
 } from "../generated/schema";
 import { GpsStatementVerifier } from "../generated/templates";
 import { parseOnChainData, dumpOnChainData } from "./parseOnChainData";
 
-// export { runTests } from "./mapping.test";
+export { runTests } from "./mapping.test";
 
 function hexZeroPad(hexstring: string, length: i32 = 32): string {
   return hexstring.substr(0, 2) + hexstring.substr(2).padStart(length * 2, "0");
@@ -55,6 +57,15 @@ export function handleLogStateTransitionFact(
  * In python: memory_page_facts_logs ?
  */
 export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
+
+  let timestamp = event.block.timestamp.toI32()
+  let day = timestamp / 86400 
+  let dayID = day.toString()
+  let dailyVolumes = dailyVolume.load(dayID)
+  if(!dailyVolumes){
+    dailyVolumes = new dailyVolume(dayID)
+  }
+
   let blockHash = event.block.hash.toHexString();
   let factHash = event.params.factHash;
   let pagesHashes = event.params.pagesHashes;
@@ -98,6 +109,10 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
 
   let parsedData = parseOnChainData(values);
   let dumpedData = dumpOnChainData(parsedData.updates).entries;
+
+  // key = ticker, value = accumulated volume of a rollup
+  let assetvalue = new Map<String, BigDecimal>()
+
   for (let i = 0; i < dumpedData.length; i++) {
     let positionId = dumpedData[i].key;
     let internVault = dumpedData[i].value;
@@ -107,6 +122,7 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
     if (!vaultHistory) {
       vaultHistory = new VaultHistory(vaultHistoryId);
     }
+    
 
     let blockHashVaultId = vaultHistoryId + ":" + blockHash;
     let vault = new Vault(blockHashVaultId);
@@ -122,6 +138,17 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
       let asset = new Asset(assetId);
       asset.amount = internAsset.amount;
       asset.assetType = internAsset.assetType;
+      
+      //storing values in mapping
+      if(assetvalue.has(ticker) == false){
+        assetvalue.set(ticker, internAsset.amount)
+      }
+      else{
+        let keysvalue = assetvalue.get(ticker)
+        keysvalue = keysvalue.plus(internAsset.amount)
+        assetvalue.set(ticker, keysvalue)
+      }
+
       asset.cachedFundingIndex = internAsset.additionalAttributes.get(
         "cached_funding_index"
       );
@@ -135,6 +162,25 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
     vaultHistory.save();
   }
 
+  for (let [key, value] of assetvalue) {
+    let dailyVolumeAssetID = dayID.toString().concat('-').concat(key.toString())
+    let dailyVolumeAssets = dailyVolumeAsset.load(dailyVolumeAssetID)
+    if(!dailyVolumeAssets){
+      let dailyVolumeAssets = new dailyVolumeAsset(dailyVolumeAssetID)
+      dailyVolumeAssets.asset = key.toString()
+      dailyVolumeAssets.amount = value
+      dailyVolumeAssets.day = dayID
+    }
+    else{
+      dailyVolumeAssets.amount = dailyVolumeAssets.amount.plus(value)
+      
+    }
+    dailyVolumeAssets.save()
+    
+  }
+
+  dailyVolumes.save()
+  
   entity.memoryPageFacts = memoryPageFacts;
   entity.save();
 }
