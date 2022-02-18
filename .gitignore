@@ -1,6 +1,5 @@
-node_modules
-data
-build
-generated
+data/
+build/
+generated/
+node_modules/
 .env
-matchstick.exe

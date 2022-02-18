@@ -26,7 +26,7 @@ import {
 import { GpsStatementVerifier } from "../generated/templates";
 import { parseOnChainData, dumpOnChainData } from "./parseOnChainData";
 
-export { runTests } from "./mapping.test";
+// export { runTests } from "./mapping.test";
 
 function hexZeroPad(hexstring: string, length: i32 = 32): string {
   return hexstring.substr(0, 2) + hexstring.substr(2).padStart(length * 2, "0");
@@ -122,7 +122,6 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
     if (!vaultHistory) {
       vaultHistory = new VaultHistory(vaultHistoryId);
     }
-    
 
     let blockHashVaultId = vaultHistoryId + ":" + blockHash;
     let vault = new Vault(blockHashVaultId);
