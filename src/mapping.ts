@@ -28,7 +28,7 @@ import {
 import { GpsStatementVerifier } from "../generated/templates";
 import { parseOnChainData, dumpOnChainData } from "./parseOnChainData";
 
-// export { runTests } from "./mapping.test";
+//export { runTests } from "./mapping.test";
 
 function hexZeroPad(hexstring: string, length: i32 = 32): string {
   return hexstring.substr(0, 2) + hexstring.substr(2).padStart(length * 2, "0");
@@ -141,10 +141,10 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
       asset.amount = internAsset.amount;
       asset.assetType = internAsset.assetType;
       
-      let zero = new BigInt(0)
+      let zero = BigInt.fromI32(0)
       let zeroDec = new BigDecimal(zero)
 
-      let minusOne = new BigInt(-1)
+      let minusOne = BigInt.fromI32(-1)
       let minusOneDec = new BigDecimal(minusOne)
       //storing values in mapping
       if(assetvalue.has(ticker) == false){
