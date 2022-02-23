@@ -1,9 +1,7 @@
 import { Address, Bytes, ethereum, TypedMap } from "@graphprotocol/graph-ts";
 import { test, newMockEvent } from "matchstick-as/assembly/index";
-// import { log } from "matchstick-as/assembly/log";
 import { ImplementationAdded } from "../generated/CallProxy/CallProxy";
 
-// import { batchOnChainData } from "./batchOnChainData";
 import {
   handleImplementationAdded,
   handleLogMemoryPageFactContinuous,
@@ -95,22 +93,4 @@ export function runTests(): void {
     handleLogMemoryPagesHashes(logStateMemoryPagesHashes_0x3eb1);
   });
 
-  //   test("parseOnChainData", () => {
-  //     let parsedOnChainData = parseOnChainData(batchOnChainData2);
-  //     let positionStateUpdate = dumpOnChainData(parsedOnChainData.updates);
-
-  //     let values = parsedOnChainData.unparsedValues.concat(batchOnChainData3);
-  //     let parsedOnChainData2 = createPositionStateUpdates(values);
-  //     let positionUpdate = dumpOnChainData(parsedOnChainData2);
-
-  //     for (let i = 0; i < values.length; i++) {
-  //       log.debug("LEFTOVER #{}={}", [i.toString(), values[i].toHexString()]);
-  //     }
-
-  //     // let lower = BigInt.fromI32(0).minus(BigInt.fromI32(2).pow(63));
-  //   });
-
-  //   test("data parsing", () => {
-  //     parseOnChainData(batchOnChainData);
-  //   });
 }

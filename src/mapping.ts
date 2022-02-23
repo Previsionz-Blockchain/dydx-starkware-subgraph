@@ -21,7 +21,6 @@ import {
   Asset,
   VaultHistory,
   dailyVolume,
-  //dailyDifferenceAsset,
   User,
   dailyVolumeAsset
 } from "../generated/schema";
@@ -34,9 +33,6 @@ function hexZeroPad(hexstring: string, length: i32 = 32): string {
   return hexstring.substr(0, 2) + hexstring.substr(2).padStart(length * 2, "0");
 }
 
-/**
- * In python: main_contract_events
- */
 export function handleLogStateTransitionFact(
   event: LogStateTransitionFact
 ): void {
@@ -55,9 +51,6 @@ export function handleLogStateTransitionFact(
   entity.save();
 }
 
-/**
- * In python: memory_page_facts_logs ?
- */
 export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
 
   let timestamp = event.block.timestamp.toI32()
@@ -204,9 +197,6 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
   entity.save();
 }
 
-/**
- * In python: memory_page_map
- */
 export function handleLogMemoryPageFactContinuous(
   event: LogMemoryPageFactContinuous
 ): void {
@@ -232,11 +222,6 @@ export function handleLogMemoryPageFactContinuous(
 
   entity.memoryPage = event.transaction.hash.toHex();
 
-  /**
-   * Would need to upgrade AssemblyScript version
-   * https://thegraph.com/docs/developer/assemblyscript-api#encodingdecoding-abi
-   * */
-  // entity.input = event.transaction.input;
   entity.save();
 }
 
