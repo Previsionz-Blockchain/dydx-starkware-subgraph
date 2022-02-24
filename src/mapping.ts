@@ -1,4 +1,4 @@
-import { Address, log, BigInt, BigDecimal, Bytes } from "@graphprotocol/graph-ts";
+import { Address, log, BigInt, BigDecimal, ethereum } from "@graphprotocol/graph-ts";
 
 import { LogStateTransitionFact, RegisterAndDepositERC20Call, RegisterUserCall } from "../generated/StarkPerpetual/StarkPerpetual";
 import {
@@ -296,30 +296,23 @@ export function handleUpgraded(event: Upgraded): void {
   entity.save();
 }
 
+
 export function handleRegisterUser(call: RegisterUserCall): void{
-  let starkKey = call.inputs.starkKey.toHexString()
-
-  let entity = new User(starkKey)
-  entity.blockHash = call.block.hash
-  entity.blockNumber = call.block.number
-  entity.timestamp = call.block.timestamp
-  entity.transactionHash = call.transaction.hash
-
-  entity.ethKey = call.inputs.ethKey
-  entity.starkKey = starkKey
-  entity.save()
+  registerUser(call,call.inputs.ethKey,call.inputs.starkKey.toHexString())
 }
 
 export function handleRegisterAndDeposit(call: RegisterAndDepositERC20Call): void{
-  let starkKey = call.inputs.starkKey.toHexString()
+  registerUser(call,call.inputs.ethKey,call.inputs.starkKey.toHexString())
+}
 
+function registerUser(call: ethereum.Call, ethKey: Address, starkKey: string): void{
   let entity = new User(starkKey)
   entity.blockHash = call.block.hash
   entity.blockNumber = call.block.number
   entity.timestamp = call.block.timestamp
   entity.transactionHash = call.transaction.hash
 
-  entity.ethKey = call.inputs.ethKey
+  entity.ethKey = ethKey
   entity.starkKey = starkKey
   entity.save()
 }
