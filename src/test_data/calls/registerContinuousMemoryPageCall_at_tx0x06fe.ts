@@ -2,8 +2,7 @@ import { ethereum, BigInt } from "@graphprotocol/graph-ts";
 import { RegisterContinuousMemoryPageCall } from "../../../generated/MemoryPageFactRegistry/MemoryPageFactRegistry";
 import { ADDRESSES } from "../constants";
 import { block_12504768 } from "../blocks/block_12504768";
-import { tx_0xaeef } from "../transactions/tx_0xaeef";
-import { batchOnChainData1, batchOnChainData3 } from "../batchOnChainData";
+import { batchOnChainData1 } from "../batchOnChainData";
 import { tx_0x06fe } from "../transactions/tx_0x06fe";
 
 let inputValues: ethereum.EventParam[] = new Array<ethereum.EventParam>();
