@@ -1,4 +1,4 @@
-import { Address, Bytes, ethereum, TypedMap } from "@graphprotocol/graph-ts";
+import { Address, Bytes, ethereum } from "@graphprotocol/graph-ts";
 import { test, newMockEvent } from "matchstick-as/assembly/index";
 import { ImplementationAdded } from "../generated/CallProxy/CallProxy";
 
@@ -7,11 +7,13 @@ import {
   handleLogMemoryPageFactContinuous,
   handleLogMemoryPagesHashes,
   handleLogStateTransitionFact,
+  handleRegisterAndDeposit,
   handleRegisterContinuousMemoryPage,
 } from "./mapping";
 import { registerContinuousMemoryPageCall_at_tx0xaeef } from "./test_data/calls/registerContinuousMemoryPageCall_at_tx0xaeef";
 import { registerContinuousMemoryPageCall_at_tx0x7431 } from "./test_data/calls/registerContinuousMemoryPageCall_at_tx0x7431";
 import { registerContinuousMemoryPageCall_at_tx0x06fe } from "./test_data/calls/registerContinuousMemoryPageCall_at_tx0x06fe";
+import { registerAndDepositERC20_at_tx0xf248 } from "./test_data/calls/registerAndDepositERC20_at_tx0xf248";
 import { logStateMemoryPagesHashes_0x3eb1 } from "./test_data/events/logStateMemoryPagesHashes_0x3eb1";
 import { logStateTransitionFact_0c3eb1 } from "./test_data/events/logStateTransitionFact_0x3eb1";
 import { logMemoryPageFactContinuous_0x06fe } from "./test_data/events/logMemoryPageFactContinuous_0x06fe";
@@ -71,6 +73,10 @@ export function runTests(): void {
   test("handleLogStateTransitionFact", () => {
     handleLogStateTransitionFact(logStateTransitionFact_0c3eb1);
   });
+  
+  test("handleRegisterUser", () => {
+    handleRegisterAndDeposit(registerAndDepositERC20_at_tx0xf248);
+  })
 
   test("handleRegisterContinuousMemoryPage", () => {
     // 3 memory pages

@@ -22,6 +22,10 @@ ADDRESSES.set(
   "dYdX: L2 Perpetual Smart Contract",
   Address.fromString("0xd54f502e184b6b739d7d27a6410a67dc462d69c8")
 );
+ADDRESSES.set(
+  "dYdX: RegisteredUser",
+  Address.fromString("0x75327e1bfD84fE960DB3b1bDe4BfCf41a8A12b10")
+)
 
 export const UNKNOWN_BYTES = Bytes.fromHexString(
   "0x0000000000000000000000000000000000000000000000000000000000000000"
