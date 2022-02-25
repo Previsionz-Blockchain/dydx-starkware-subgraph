@@ -111,18 +111,19 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
   for (let i = 0; i < dumpedData.length; i++) {
     let positionId = dumpedData[i].key;
     let internVault = dumpedData[i].value;
+    let starkKey = internVault.starkKey.toHexString();
 
     let vaultHistoryId = positionId.toString();
     let vaultHistory = VaultHistory.load(vaultHistoryId);
     if (!vaultHistory) {
       vaultHistory = new VaultHistory(vaultHistoryId);
+      vaultHistory.user = starkKey
     }
 
     let blockHashVaultId = vaultHistoryId + ":" + blockHash;
     let vault = new Vault(blockHashVaultId);
     vault.positionID = BigInt.fromString(positionId.toString());
-    vault.starkKey = internVault.starkKey.toHexString();
-    vault.user = internVault.starkKey.toHexString();
+    vault.starkKey = starkKey;
     vault.memoryPageHash = memoryPageHashId;
 
     let assetsEntries = internVault.assets.entries;

@@ -89,6 +89,7 @@ type ProxyEvent implements Event @entity {
 
 type VaultHistory @entity {
   id: ID!
+  user: User!
   latestVault: Vault!
   historicalVaults: [Vault!]! @derivedFrom(field: "vaultHistory")
 }
@@ -96,7 +97,6 @@ type VaultHistory @entity {
 type Vault @entity {
   id: ID!
   positionID: BigInt!
-  user: User!
   starkKey: String!
   assets: [Asset!]! @derivedFrom(field: "vault")
   memoryPageHash: MemoryPageHash!
@@ -138,11 +138,11 @@ type dailyVolume @entity {
 
 type User @entity{
   id: ID!
-  starkKey: String!
   blockNumber: BigInt!
   blockHash: Bytes!
   transactionHash: Bytes!
   timestamp: BigInt!
+  starkKey: String!
   ethKey: Bytes!
-  vaults: [Vault!]! @derivedFrom(field: "user")
+  vaultHistories: [VaultHistory!]! @derivedFrom(field: "user")
 }
