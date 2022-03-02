@@ -110,6 +110,7 @@ type Asset @entity {
   assetType: String!
   amount: BigDecimal!
   cachedFundingIndex: BigInt
+  dailyVolumeAsset: dailyVolumeAsset!
 }
 
 #type dailyDifferenceAsset @entity {
@@ -124,6 +125,7 @@ type dailyVolumeAsset @entity{
   asset: String!
   amount: BigDecimal!
   day: dailyVolume! 
+  assets: [Asset!]! @derivedFrom(field: "dailyVolumeAsset")
   #amountTrades: BigInt!
   #dailyDifferenceAsset: BigDecimal!
 }

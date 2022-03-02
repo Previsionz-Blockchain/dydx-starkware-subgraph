@@ -27,7 +27,7 @@ import {
 import { GpsStatementVerifier } from "../generated/templates";
 import { parseOnChainData, dumpOnChainData } from "./parseOnChainData";
 
-//export { runTests } from "./mapping.test";
+export { runTests } from "./mapping.test";
 
 function hexZeroPad(hexstring: string, length: i32 = 32): string {
   return hexstring.substr(0, 2) + hexstring.substr(2).padStart(length * 2, "0");
@@ -159,6 +159,9 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
           keysvalue = keysvalue.plus(internAsset.amount)
         }
         assetvalue.set(ticker, keysvalue)
+
+        let dailyVolumeAssetID = dayID.toString().concat('-').concat(ticker)
+        asset.dailyVolumeAsset = dailyVolumeAssetID
       }
 
       asset.cachedFundingIndex = internAsset.additionalAttributes.get(
@@ -180,6 +183,7 @@ export function handleLogMemoryPagesHashes(event: LogMemoryPagesHashes): void {
     let value = assetvalue.get(key)
     let dailyVolumeAssetID = dayID.toString().concat('-').concat(key)
     let dailyVolumeAssets = dailyVolumeAsset.load(dailyVolumeAssetID)
+
     if(!dailyVolumeAssets){
       dailyVolumeAssets = new dailyVolumeAsset(dailyVolumeAssetID)
       dailyVolumeAssets.asset = key.toString()
